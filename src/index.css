@@ -1,0 +1,7 @@
+@import "tailwindcss";
+.gradient-text {
+background: #4787DD;
+background: radial-gradient(ellipse farthest-corner at center center, #4787DD 26%, #F5E04B 86%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}

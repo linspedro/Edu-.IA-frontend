@@ -19,7 +19,6 @@ function G_Plano() {
 
       <main className="h-auto w-full flex flex-col items-center justify-center">
         <div className="flex items-center justify-between w-full max-w-6xl px-10 mt-10">
-
           {/* TEXTO */}
           <div className="flex flex-col gap-8 max-w-xl">
             <div className="flex flex-col gap-3">
@@ -51,7 +50,7 @@ function G_Plano() {
           </div>
 
           {/* IMAGEM */}
-          <div className="w-[400px]">
+          <div className="w-full max-w-[400px]">
             <ImageContainer img={GerarIA} />
           </div>
         </div>
@@ -59,8 +58,15 @@ function G_Plano() {
         {/* COMO FUNCIONA */}
         <div id="como-funciona" className="mt-36">
           <ContainerSection>
-            <TextGraident Texto={"Como funciona"} TituloOuSubtitulo={"titulo"} tamanho={"35px"} />
-            <TextGraident Texto={"Crie seu plano em 3 passos simples"} TituloOuSubtitulo={"Subtitulo"} />
+            <TextGraident
+              Texto={"Como funciona"}
+              TituloOuSubtitulo={"titulo"}
+              tamanho={"35px"}
+            />
+            <TextGraident
+              Texto={"Crie seu plano em 3 passos simples"}
+              TituloOuSubtitulo={"Subtitulo"}
+            />
 
             <div className="flex gap-5 mt-2.5">
               <InfoCard

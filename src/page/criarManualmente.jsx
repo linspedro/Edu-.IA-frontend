@@ -5,8 +5,25 @@ import Input from "../componentes/input";
 import TextGraident from "../componentes/textGraidient";
 import BtnAmarelo from "../componentes/BntAmarelo";
 import BtnAzul from "../componentes/bntAzul";
+import { useForm, useFieldArray } from "react-hook-form";
 
 function CriarManualmente() {
+  const { register, handleSubmit, control } = useForm({
+    defaultValues: {
+      aulas: [],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "aulas",
+  });
+
+  const onSubmit = (data) => {
+    console.log("Plano criado:", data);
+    alert("Plano salvo com sucesso!");
+  };
+
   return (
     <section className="min-h-screen bg-[#ececec]">
       <MenuAzul />
@@ -14,12 +31,15 @@ function CriarManualmente() {
       <div className="flex w-full">
         <MenuLateral />
 
-        <div className="flex-1 flex flex-col items-center py-6 px-4">
-          {/* <h2 className="w-full text-center text-4xl font-bold mb-6 text-blue-500">
-            Planejar Aula
-          </h2> */}
-
-          <TextGraident Texto="Planejar aula " TituloOuSubtitulo="titulo" tamanho={'35px'}/>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex-1 flex flex-col items-center py-6 px-4"
+        >
+          <TextGraident
+            Texto="Planejar aula"
+            TituloOuSubtitulo="titulo"
+            tamanho={"35px"}
+          />
 
           <div className="w-full max-w-4xl flex flex-col gap-6 mt-3.5">
 
@@ -33,51 +53,35 @@ function CriarManualmente() {
               />
 
               <div className="grid grid-cols-2 gap-5 mt-5">
-                <Input
-                  placeholder={"Ex: Janeiro/2026"}
-                  type={"text"}
-                  largura="100%"
-                />
-
-                <Input
-                  placeholder={"Ex: 3º Ano A"}
-                  type={"text"}
-                  largura="100%"
-                />
-
-                <Input
-                  placeholder={"Ex: Matemática"}
-                  type={"text"}
-                  largura="100%"
-                />
-
-                <Input
-                  placeholder={"Ex: 1º Trimestre"}
-                  type={"text"}
-                  largura="100%"
-                />
+                <Input {...register("periodo", { required: true })} placeholder="Ex: Janeiro/2026" />
+                <Input {...register("turma", { required: true })} placeholder="Ex: 3º Ano A" />
+                <Input {...register("disciplina", { required: true })} placeholder="Ex: Matemática" />
+                <Input {...register("trimestre", { required: true })} placeholder="Ex: 1º Trimestre" />
               </div>
 
               <div className="flex flex-col gap-5 mt-5">
                 <textarea
-                  placeholder="Descreva os componentes curriculares abordados..."
+                  {...register("componentes")}
+                  placeholder="Componentes curriculares..."
                   className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
                 />
 
                 <textarea
-                  placeholder="Liste as habilidades a serem desenvolvidas..."
+                  {...register("habilidades")}
+                  placeholder="Habilidades..."
                   className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
                 />
 
                 <textarea
-                  placeholder="Descreva os objetivos de conhecimento..."
+                  {...register("objetivos")}
+                  placeholder="Objetivos..."
                   className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
                 />
 
                 <Input
-                  placeholder={"Quantidade De Aula Ex: 10"}
-                  type={"number"}
-                  largura="100%"
+                  {...register("quantidadeAulas", { required: true })}
+                  type="number"
+                  placeholder="Quantidade de aulas"
                 />
               </div>
             </div>
@@ -89,37 +93,67 @@ function CriarManualmente() {
                   Planos e Estratégias
                 </h3>
 
-                <BtnAmarelo children={'+ Adicionar aula'}/>
+                <BtnAmarelo
+                  type="button"
+                  children="+ Adicionar aula"
+                  onClick={() =>
+                    append({ titulo: "", descricao: "" })
+                  }
+                />
               </div>
 
-              <div className="text-center text-zinc-500 py-10">
-                Nenhuma aula adicionada. Clique em "Adicionar Aula" para começar.
-              </div>
+              {fields.length === 0 && (
+                <div className="text-center text-zinc-500 py-10">
+                  Nenhuma aula adicionada.
+                </div>
+              )}
+
+              {fields.map((item, index) => (
+                <div key={item.id} className="mb-4 border p-3 rounded">
+                  <Input
+                    placeholder="Título da aula"
+                    {...register(`aulas.${index}.titulo`, { required: true })}
+                  />
+
+                  <textarea
+                    placeholder="Descrição da aula"
+                    className="w-full mt-2 p-3 border rounded-lg"
+                    {...register(`aulas.${index}.descricao`, { required: true })}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => remove(index)}
+                    className="text-red-500 text-sm mt-2"
+                  >
+                    Remover
+                  </button>
+                </div>
+              ))}
             </div>
 
-            {/* PROCESSO AVALIATIVO */}
+            {/* AVALIAÇÃO */}
             <div className="bg-white border border-zinc-300 rounded-[10px] p-6">
               <h3 className="text-2xl font-semibold mb-5">
                 Processo Avaliativo
               </h3>
 
-              <div className="flex flex-col gap-5">
-                <textarea
-                  placeholder="Ex: Provas, trabalhos em grupo, atividades práticas..."
-                  className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
-                />
+              <textarea
+                {...register("avaliacoes", { required: true })}
+                placeholder="Provas, trabalhos..."
+                className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
+              />
 
-                <Input
-                  placeholder={"Ex: Formativa, somativa, diagnóstica..."}
-                  type={"text"}
-                  largura="100%"
-                />
+              <Input
+                {...register("tipoAvaliacao", { required: true })}
+                placeholder="Formativa, somativa..."
+              />
 
-                <textarea
-                  placeholder="Descreva os critérios de avaliação..."
-                  className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
-                />
-              </div>
+              <textarea
+                {...register("criterios", { required: true })}
+                placeholder="Critérios..."
+                className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
+              />
             </div>
 
             {/* MATERIAIS */}
@@ -129,22 +163,16 @@ function CriarManualmente() {
               </h3>
 
               <textarea
-                placeholder="Liste os materiais e recursos necessários..."
+                {...register("materiais", { required: true })}
+                placeholder="Materiais necessários..."
                 className="w-full h-32 border border-zinc-300 rounded-lg p-3 resize-none outline-none"
               />
             </div>
 
-            {/* BOTÃO */}
-            {/* <button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl text-lg font-semibold transition"
-            >
-              Salvar Plano
-            </button> */}
-
-            <BtnAzul children={'Salvar plano'} />
-
+            {/* BOTÃO FINAL */}
+            <BtnAzul type="submit" children={"Salvar plano"} />
           </div>
-        </div>
+        </form>
       </div>
     </section>
   );

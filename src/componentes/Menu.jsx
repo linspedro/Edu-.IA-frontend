@@ -18,7 +18,7 @@ import { useNavigate } from "react-router";
             </nav>
 
             <div className="flex gap-4">
-                <input type="button" value="Começar Agora" className="bg-amber-300 text-white px-4 py-2 rounded-lg border-b-blue-500 border-solid hover:bg-blue-700 transition cursor-pointer" />
+                <input type="button" value="Começar Agora" className="bg-amber-300 text-white px-4 py-2 rounded-lg border-b-blue-500 border-solid hover:bg-blue-700 transition cursor-pointer" onClick={() => {navigate('/Cadastro')}}/>
                 <input type="button" value="Entrar" className="text-2xl  hover:rounded-lg hover:opacity-50 cursor-pointer" onClick={() => {navigate('/Login')}}/>
             </div>
         </header>

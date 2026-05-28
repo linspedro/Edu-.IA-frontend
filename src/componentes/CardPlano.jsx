@@ -1,7 +1,8 @@
 import { BookCopy,Eye,CalendarDays } from "lucide-react";
 import BtnAzul from "./bntAzul";
-import { Navigate } from "react-router";
+import { useNavigate } from "react-router";
 function CardPlano({ titulo, serie, data,navega }) {
+      let navigate = useNavigate();
     return (
         <div className="bg-white rounded-xl border border-amber-300 p-4 w-72 shadow-sm">
             
@@ -20,7 +21,7 @@ function CardPlano({ titulo, serie, data,navega }) {
                 <Eye size={20}/> visualizar
             </button> */}
             <div className="mt-4 flex items-center justify-center ">
-            <BtnAzul children={'Visualizar'} icon={<Eye size={20} onClick={() => {Navigate(navega)}}/>} />
+            <BtnAzul children={'Visualizar'} icon={<Eye size={20}/>} onClick={() => {navigate(navega)}} />
             </div>
         </div>
     )

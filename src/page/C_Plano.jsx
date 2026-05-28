@@ -9,7 +9,6 @@ import ContainerSection from "../componentes/ContainerFunciona";
 import InfoCard from "../componentes/infoCard";
 import Footer from "../componentes/footer";
 
-
 import { Pencil, SlidersHorizontal, Target } from "lucide-react";
 
 function C_Plano() {
@@ -19,7 +18,6 @@ function C_Plano() {
 
       <main className="h-auto w-full flex flex-col items-center justify-center">
         <div className="flex items-center justify-between w-full max-w-6xl px-10 mt-10">
-
           {/* TEXTO */}
           <div className="flex flex-col gap-8 max-w-xl">
             <div className="flex flex-col gap-3">
@@ -52,7 +50,7 @@ function C_Plano() {
           </div>
 
           {/* IMAGEM */}
-          <div className="w-[400px]">
+          <div className="w-full max-w-[400px]">
             <ImageContainer img={Manualmente} />
           </div>
         </div>
@@ -91,9 +89,7 @@ function C_Plano() {
               <InfoCard
                 icon={<Target size={30} className="text-white" />}
                 title={"Finalize e use"}
-                description={
-                  "Ajuste conforme sua realidade e aplique em sala."
-                }
+                description={"Ajuste conforme sua realidade e aplique em sala."}
               />
             </div>
           </ContainerSection>

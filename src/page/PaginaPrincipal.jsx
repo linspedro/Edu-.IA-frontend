@@ -8,15 +8,13 @@ import { BookOpen, Book, Sparkles } from "lucide-react";
 
 function PaginaPrincipal() {
   const today = new Date().toLocaleDateString();
-  let navigate = useNavigate()
-  
-  return (
-    <div className="flex h-screen">
+  let navigate = useNavigate();
 
+  return (
+    <div className="flex min-h-screen">
       <MenuLateral />
 
       <section className="flex-1 p-6 bg-[#3184C7] flex flex-col gap-4 overflow-auto">
-
         {/* HEADER */}
         <div className="flex justify-between items-start max-w-6xl mx-auto w-full">
 
@@ -39,21 +37,15 @@ function PaginaPrincipal() {
           </div>
         </div>
 
-        {/* HERO CORRIGIDO */}
-        <div className="flex  justify-between max-w-6xl  w-full mt-10">
-
+          {/* HERO CORRIGIDO */}
+        <div className="flex flex-col md:flex-row justify-between max-w-6xl w-full mt-10">
           {/* CARD PROF */}
           <div className="bg-[#054D88] text-white text-2xl w-[200px] h-28 px-4 py-3 rounded-lg shadow-md flex items-center">
             Bem-vindo <br /> Prof Nome
           </div>
 
           {/* IMAGEM CORRIGIDA */}
-          <img
-            src={IAImg}
-            alt="Ilustração"
-            className="w-[240px] top-0 "
-          />
-
+          <img src={IAImg} alt="Ilustração" className="w-[240px] top-0 " />
         </div>
 
         {/* AÇÕES RÁPIDAS */}
@@ -66,25 +58,28 @@ function PaginaPrincipal() {
         </div>
 
         <div className="flex gap-4 max-w-6xl  ">
-
           <InfoCard
             title={"Planejar aula"}
             description={"Crie planos de aula estruturados"}
-            icon={<Book size={28} className="text-white"/>}
-             onClick={() => {navigate("/PlanejarPrincipal");}}
+            icon={<Book size={28} className="text-white" />}
+            onClick={() => {
+              navigate("/PlanejarPrincipal");
+            }}
           />
 
           <InfoCard
             title={"Biblioteca"}
             description={"Acesse seus planos salvos"}
-            icon={<BookOpen size={28} className="text-white"  />}
-            onClick={() => {navigate("/BibliotecaPrincipal");}}
+            icon={<BookOpen size={28} className="text-white" />}
+            onClick={() => {
+              navigate("/BibliotecaPrincipal");
+            }}
           />
-
         </div>
 
         {/* NOVIDADE IA */}
-        <div className="
+        <div
+          className="
           mt-6
           max-w-6xl mx-auto
           w-full
@@ -95,8 +90,8 @@ function PaginaPrincipal() {
           text-white
           bg-gradient-to-r from-yellow-400 via-blue-400 to-blue-500
           shadow-md
-        ">
-
+        "
+        >
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <Sparkles size={20} />
@@ -106,13 +101,11 @@ function PaginaPrincipal() {
             </div>
 
             <span className="text-sm opacity-90 leading-snug">
-              Agora você pode criar planos de aula completos usando inteligência artificial.
-              Economize tempo e tenha sugestões personalizadas!
+              Agora você pode criar planos de aula completos usando inteligência
+              artificial. Economize tempo e tenha sugestões personalizadas!
             </span>
           </div>
-
         </div>
-
       </section>
     </div>
   );

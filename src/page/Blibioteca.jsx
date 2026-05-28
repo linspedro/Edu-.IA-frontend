@@ -7,7 +7,7 @@ import Biblioteca from "../assets/Biblioteca.png";
 import TextHr from "../componentes/textHr";
 import ContainerSection from "../componentes/ContainerFunciona";
 import InfoCard from "../componentes/infoCard";
-import { BookOpen, Eye, Copy } from "lucide-react"; 
+import { BookOpen, Eye, Copy } from "lucide-react";
 import Footer from "../componentes/footer";
 
 function Blibioteca() {
@@ -17,7 +17,6 @@ function Blibioteca() {
 
       <main className="h-auto w-full flex flex-col items-center justify-center">
         <div className="flex items-center justify-between w-full max-w-6xl px-10 mt-10">
-
           {/* TEXTO */}
           <div className="flex flex-col gap-8 max-w-xl">
             <div className="flex flex-col gap-3">
@@ -50,7 +49,7 @@ function Blibioteca() {
           </div>
 
           {/* IMAGEM */}
-          <div className="w-[400px]">
+          <div className="w-full max-w-[400px]">
             <ImageContainer img={Biblioteca} />
           </div>
         </div>

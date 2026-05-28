@@ -9,6 +9,8 @@ import PlanejarPrincipal from './page/PlanejarPrincipal'
 import CriarManualmente from './page/criarManualmente'
 import GerarcomIa from './page/GerarcomIa'
 import VisualizarPerfil from './page/Visualizarperfil'
+import Cadastro from './page/Cadastro'
+import VisualizarBiblioteca from './page/visualizarBlibioteca'
 import { BrowserRouter, Routes, Route } from "react-router";
 
 import './App.css'
@@ -30,6 +32,8 @@ function App() {
         <Route path='/CriarManualmente' element={<CriarManualmente/>}/>
         <Route path='/GerarComIA' element={<GerarcomIa/>}/>
         <Route path='/VisualizarPerfil' element={<VisualizarPerfil/>}/>
+        <Route path='/Cadastro' element={<Cadastro/>}/>
+        <Route path='/VisualizarBibliotecao' element={<VisualizarBiblioteca/>}/>
 
       </Routes>
   </BrowserRouter>

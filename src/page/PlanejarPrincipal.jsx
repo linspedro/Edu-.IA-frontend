@@ -4,12 +4,12 @@ import TextHr from "../componentes/textHr";
 import { ClipboardList, Sparkles } from "lucide-react";
 import BtnAmarelo from "../componentes/BntAmarelo";
 import BtnAzul from "../componentes/bntAzul";
-import { useNavigate } from "react-router"
+import { useNavigate } from "react-router";
 
 function PlanejarPrincipal() {
-  let navigate = useNavigate()
+  let navigate = useNavigate();
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       <MenuLateral />
 
       <section className="flex-1 bg-[#F8FAFC] overflow-auto">
@@ -22,7 +22,7 @@ function PlanejarPrincipal() {
               TipoDeText={"Paragrafo"}
               text={"Planejar Aula"}
               color="#155A93"
-              CorDoParagrafo={'#2499F9'}
+              CorDoParagrafo={"#2499F9"}
               largura={"180px"}
             />
           </div>
@@ -52,8 +52,13 @@ function PlanejarPrincipal() {
               {/* <button className="mt-6 w-full bg-[#2F80ED] text-white py-2.5 rounded-lg hover:bg-blue-700 transition">
                 Começar manualmente
               </button> */}
-              <div  className="mt-6 w-full  text-white py-2.5 justify-center flex rounded-lg">
-                <BtnAzul children={"Começar Manualmente"} onClick={() => {navigate('/CriarManualmente')}} />
+              <div className="mt-6 w-full  text-white py-2.5 justify-center flex rounded-lg">
+                <BtnAzul
+                  children={"Começar Manualmente"}
+                  onClick={() => {
+                    navigate("/CriarManualmente");
+                  }}
+                />
               </div>
             </div>
 
@@ -78,7 +83,12 @@ function PlanejarPrincipal() {
               </ul>
 
               <div className="mt-6 w-full  items-center flex justify-center text-white py-2.5 rounded-lg ">
-                <BtnAmarelo children={"Gerar com IA"} onClick={() => {navigate('/GerarComIA')}}/>
+                <BtnAmarelo
+                  children={"Gerar com IA"}
+                  onClick={() => {
+                    navigate("/GerarComIA");
+                  }}
+                />
               </div>
             </div>
           </div>

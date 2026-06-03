@@ -5,3 +5,375 @@ background: radial-gradient(ellipse farthest-corner at center center, #4787DD 26
 -webkit-background-clip: text;
 -webkit-text-fill-color: transparent;
 }
+
+/* =========================================================
+   BREAKPOINT PADRÃO
+   ========================================================= */
+
+/* =========================
+   BTN AMARELO
+   ========================= */
+
+@media (max-width: 768px) {
+  .btn-amarelo {
+    height: 3rem;
+    padding: 0 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-amarelo {
+    width: 100%;
+    height: 2.75rem;
+    padding: 0 0.875rem;
+    font-size: 0.95rem;
+  }
+}
+
+
+/* =========================
+   BTN AZUL
+   ========================= */
+
+@media (max-width: 768px) {
+  .btn-azul {
+    height: 3rem;
+    padding: 0 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-azul {
+    width: 100%;
+    height: 2.75rem;
+    padding: 0 0.875rem;
+    font-size: 0.95rem;
+  }
+}
+
+
+/* =========================
+   CARD PLANO
+   ========================= */
+
+@media (max-width: 768px) {
+  .card-plano {
+    width: 20rem;
+    padding: 1rem;
+  }
+
+  .card-plano h4 {
+    font-size: 1rem;
+  }
+
+  .card-plano p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-plano {
+    width: 100%;
+    padding: 0.875rem;
+  }
+
+  .card-plano h4 {
+    font-size: 0.95rem;
+  }
+
+  .card-plano p {
+    font-size: 0.8rem;
+  }
+}
+
+
+/* =========================
+   CONTAINER COMO FUNCIONA
+   ========================= */
+
+@media (max-width: 768px) {
+  .container-como-funciona {
+    max-width: 90%;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container-como-funciona {
+    max-width: 100%;
+    padding: 0.75rem;
+  }
+}
+
+
+/* =========================
+   IMAGE CONTAINER
+   ========================= */
+
+@media (max-width: 768px) {
+  .image-container {
+    max-width: 20rem;
+  }
+
+  .image-container img {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .image-container {
+    max-width: 16rem;
+  }
+
+  .image-container img {
+    max-width: 100%;
+  }
+}
+
+
+/* =========================
+   FOOTER
+   ========================= */
+
+@media (max-width: 768px) {
+  .footer-title {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  .footer-nav {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-title {
+    font-size: 2rem;
+  }
+
+  .footer-nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+
+/* =========================
+   HEADER LOGIN
+   ========================= */
+
+@media (max-width: 768px) {
+  .header-login {
+    height: 70px;
+    padding: 0 1rem;
+  }
+
+  .header-login h1 {
+    font-size: 2.5rem;
+  }
+
+  .header-login a {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-login {
+    height: 60px;
+    padding: 0 0.75rem;
+  }
+
+  .header-login h1 {
+    font-size: 2rem;
+  }
+
+  .header-login a {
+    font-size: 1rem;
+  }
+}
+
+
+/* =========================
+   INFO CARD
+   ========================= */
+
+@media (max-width: 768px) {
+  .info-card {
+    width: 18rem;
+    padding: 1rem;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+  }
+
+  .info-card p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-card {
+    width: 100%;
+    padding: 0.875rem;
+  }
+
+  .info-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .info-card p {
+    font-size: 0.8rem;
+  }
+}
+
+
+/* =========================
+   INPUT
+   ========================= */
+
+@media (max-width: 768px) {
+  .input-field {
+    width: 100%;
+  }
+
+  .input-field input {
+    height: 2.5rem;
+    font-size: 0.95rem;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-field input {
+    height: 2.25rem;
+    font-size: 0.9rem;
+    padding: 0 0.875rem;
+  }
+}
+
+
+/* =========================
+   NAVBAR
+   ========================= */
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .navbar h2 {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  .navbar nav ul {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navbar .actions {
+    flex-direction: row;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar h2 {
+    font-size: 2rem;
+  }
+
+  .navbar nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .navbar .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .navbar .actions input {
+    width: 100%;
+  }
+}
+
+
+/* =========================
+   MENU AZUL
+   ========================= */
+
+@media (max-width: 768px) {
+  .menu-azul {
+    height: 6rem;
+    padding: 0 1rem;
+  }
+
+  .menu-azul h2 {
+    font-size: 1.5rem;
+  }
+
+  .menu-azul img {
+    width: 8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-azul {
+    flex-direction: column;
+    height: auto;
+    padding: 1rem;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .menu-azul h2 {
+    font-size: 1.25rem;
+  }
+
+  .menu-azul img {
+    width: 6rem;
+  }
+}
+
+
+/* =========================
+   MENU LATERAL
+   ========================= */
+
+@media (max-width: 768px) {
+  .menu-lateral {
+    width: 14rem;
+  }
+
+  .menu-lateral svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .perfil-popup {
+    width: 18rem;
+    left: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-lateral {
+    width: 100%;
+  }
+
+  .perfil-popup {
+    width: 90%;
+    left: 5%;
+  }
+}

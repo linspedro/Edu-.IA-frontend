@@ -12,7 +12,7 @@ function PaginaPrincipal() {
 
   return (
     <div className="flex min-h-screen">
-      <MenuLateral />
+      <MenuLateral/>
 
       <section className="flex-1 p-6 bg-[#3184C7] flex flex-col gap-4 overflow-auto">
         {/* HEADER */}

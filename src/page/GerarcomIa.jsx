@@ -1,3 +1,4 @@
+import BtnAmarelo from "../componentes/BntAmarelo";
 import BtnAzul from "../componentes/bntAzul";
 import Input from "../componentes/input";
 import MenuAzul from "../componentes/MenuAzul";
@@ -20,14 +21,16 @@ function GerarComIA() {
 
   return (
     <section className="min-h-screen bg-[#ececec]">
-      <MenuAzul />
+      <MenuAzul Text={'Gerar com IA'}/>
 
       <div className="flex flex-col md:flex-row w-full">
         <MenuLateral />
-
         <div className="flex-1">
-          <div className="p-4">
-            <BtnAzul children={"Voltar"} />
+          <div className="flex">
+            <div className="p-4 flex justify-between gap-2.5 p-4 ">
+              <BtnAzul children={"Voltar"} />
+              <BtnAmarelo children={'Anexar Cronograma'}/>
+            </div>
           </div>
 
           <form

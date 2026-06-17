@@ -10,7 +10,7 @@ function BibliotecaPrincipal() {
       titulo: "Química ecológica",
       serie: "3º Ensino Médio",
       data: "Maio • Criado em 22/04/2026",
-      navega: "/VisualizarBiblioteca",
+      navega: "/VisualizarBibliotecao",
     },
     {
       titulo: "2º Guerra Mundial",

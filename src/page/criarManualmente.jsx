@@ -26,7 +26,7 @@ function CriarManualmente() {
 
   return (
     <section className="min-h-screen bg-[#ececec]">
-      <MenuAzul />
+      <MenuAzul Text={'Cronogramas'}/>
 
       <div className="flex flex-col md:flex-row w-full">
         <MenuLateral />

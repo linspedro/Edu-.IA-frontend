@@ -9,7 +9,7 @@ function VisualizarBiblioteca() {
 
   return (
     <section className="min-h-screen bg-white">
-      <MenuAzul />
+      <MenuAzul Text={'Biblioteca'}/>
 
       {/* Conteúdo */}
       <div className="flex justify-center w-full py-6 md:py-10 px-4">

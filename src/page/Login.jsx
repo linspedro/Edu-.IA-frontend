@@ -31,22 +31,42 @@ function Login() {
   };
 
   return (
-    <div className="bg-[#123D61] flex justify-center items-center pt-[90px] font-[Poppins] min-h-screen">
+    <div className="min-h-screen bg-[#123D61] flex justify-center items-center px-4 pt-24 pb-6 font-[Poppins]">
       <HeaderLogin />
 
-      <div className="bg-white w-[400px] rounded-xl p-10 flex flex-col justify-center gap-8 mb-[38px]">
+      <div
+        className="
+          bg-white
+          w-full
+          max-w-md
+          rounded-xl
+          p-6
+          md:p-10
+          flex
+          flex-col
+          justify-center
+          gap-6
+          shadow-lg
+        "
+      >
         {/* Logo */}
         <div className="flex justify-center">
-          <img src={EduaIA} className="w-[120px] h-[84px]" />
+          <img
+            src={EduaIA}
+            alt="Edu+IA"
+            className="w-24 md:w-32 h-auto"
+          />
         </div>
 
         {/* Title */}
-        <div className="flex flex-col items-center text-[#2499F9]">
-          <h1 className="text-3xl font-semibold">Bem-vindo ao Edu+</h1>
+        <div className="flex flex-col items-center text-[#2499F9] text-center">
+          <h1 className="text-2xl md:text-3xl font-semibold">
+            Bem-vindo ao Edu+
+          </h1>
         </div>
 
         {/* Subtitle */}
-        <div className="text-center bg-gradient-to-r from-[#DAE3FF] to-[#2499F9] bg-clip-text text-transparent text-lg">
+        <div className="text-center bg-gradient-to-r from-[#DAE3FF] to-[#2499F9] bg-clip-text text-transparent text-base md:text-lg">
           Entrar na sua conta
         </div>
 
@@ -59,6 +79,7 @@ function Login() {
             <Input
               type="email"
               placeholder="Digite seu E-mail!"
+              largura="100%"
               {...register("Email", {
                 required: "E-mail é obrigatório",
               })}
@@ -75,6 +96,7 @@ function Login() {
             <Input
               type="password"
               placeholder="Digite sua Senha!"
+              largura="100%"
               {...register("Senha", {
                 required: "Senha é obrigatória",
               })}
@@ -93,11 +115,15 @@ function Login() {
               className="text-[#2499F9] hover:underline"
               onClick={() => navigation("/Cadastro")}
             >
-              Não tem conta? cadastre-se
+              Não tem conta? Cadastre-se
             </button>
           </div>
 
-          <BntAmarelo children={"Entrar"} type="submit" />
+          <BntAmarelo
+            children={"Entrar"}
+            type="submit"
+            tamanho="w-full"
+          />
         </form>
       </div>
     </div>

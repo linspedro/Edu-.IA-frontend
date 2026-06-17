@@ -5,7 +5,6 @@ import Input from "../componentes/input";
 import CardPlano from "../componentes/CardPlano";
 
 function BibliotecaPrincipal() {
-  // base local (seus cards)
   const planos = [
     {
       titulo: "Química ecológica",
@@ -34,28 +33,22 @@ function BibliotecaPrincipal() {
 
     setTimeout(() => {
       const filtro = planos.filter((item) =>
-        item.titulo.toLowerCase().includes(disciplina.toLowerCase()),
+        item.titulo.toLowerCase().includes(disciplina.toLowerCase())
       );
-      console.log(filtro);
 
       setDadosFiltrados(filtro);
       setLoading(false);
-    }, 300); // simula leve delay
+    }, 300);
   };
 
-  // // decide o que mostrar
-  // const listaParaExibir = disciplina ? dadosFiltrados : planos;
-
-  // executa toda vez que a variavel disciplina muda
   useEffect(() => {
     buscar();
   }, [disciplina]);
 
-  // so qexecuta quando abrir a pagina (1 vez apenas)
   useEffect(() => {
     async function buscarBackend() {
       const response = await fetch(
-        "http://localhost:3000/buscar?disciplina=biologia",
+        "http://localhost:3000/buscar?disciplina=biologia"
       );
 
       const dados = await response.json();
@@ -67,24 +60,39 @@ function BibliotecaPrincipal() {
   }, []);
 
   return (
-    <section className="flex flex-col md:flex-row h-auto bg-white">
+    <section className="flex flex-col md:flex-row min-h-screen bg-white">
       <MenuLateral />
 
       <div className="flex flex-col flex-1 min-w-0">
-        <MenuAzul />
+        <MenuAzul Text="Biblioteca" />
 
         <div className="p-4 md:p-8 space-y-6">
+          {/* Cabeçalho */}
           <div>
-            <h2 className="text-2xl font-semibold">Biblioteca</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl md:text-3xl font-semibold">
+              Biblioteca
+            </h2>
+
+            <p className="text-gray-600 text-sm md:text-base">
               Gerencie e visualize todos os seus planos de aula
             </p>
           </div>
 
-          {/* BUSCA */}
+          {/* Busca */}
           <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-            <div className="flex gap-2 w-full lg:w-auto">
-              <div className="bg-gradient-to-r from-[#054D88] to-[#2499F9] p-1 opacity-80 rounded-[10px] flex-1 lg:w-[300px]">
+            <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+              <div
+                className="
+                  bg-gradient-to-r
+                  from-[#054D88]
+                  to-[#2499F9]
+                  p-1
+                  opacity-80
+                  rounded-[10px]
+                  w-full
+                  sm:w-[300px]
+                "
+              >
                 <Input
                   placeholder="Buscar por disciplina"
                   value={disciplina}
@@ -94,21 +102,48 @@ function BibliotecaPrincipal() {
 
               <button
                 onClick={buscar}
-                className="bg-[#054D88] hover:bg-[#043b69] text-white px-5 py-2 rounded-[10px] font-medium transition"
+                className="
+                  bg-[#054D88]
+                  hover:bg-[#043b69]
+                  text-white
+                  px-5
+                  py-2
+                  rounded-[10px]
+                  font-medium
+                  transition
+                  w-full
+                  sm:w-auto
+                "
               >
                 Buscar
               </button>
             </div>
 
-            <h3 className="text-xl md:text-2xl font-medium max-w-md">
+            <h3
+              className="
+                text-lg
+                sm:text-xl
+                md:text-2xl
+                font-medium
+                max-w-md
+              "
+            >
               Edu+IA a sua plataforma confiável de desenvolvimento
             </h3>
           </div>
 
-          {/* CARDS */}
-          <div className="flex gap-6 flex-wrap justify-center lg:justify-start">
+          {/* Cards */}
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              xl:grid-cols-3
+              gap-6
+            "
+          >
             {loading && (
-              <p className="text-blue-500 font-medium w-full text-center">
+              <p className="text-blue-500 font-medium text-center col-span-full">
                 Buscando resultados...
               </p>
             )}
@@ -124,11 +159,13 @@ function BibliotecaPrincipal() {
                 />
               ))}
 
-            {!loading && disciplina && dadosFiltrados.length === 0 && (
-              <p className="text-red-500 font-medium w-full text-center">
-                Nenhum resultado encontrado
-              </p>
-            )}
+            {!loading &&
+              disciplina &&
+              dadosFiltrados.length === 0 && (
+                <p className="text-red-500 font-medium text-center col-span-full">
+                  Nenhum resultado encontrado
+                </p>
+              )}
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import BtnAmarelo from "../componentes/BntAmarelo";
+import BtnAzul from "../componentes/bntAzul";
 import Input from "../componentes/input";
 import MenuAzul from "../componentes/MenuAzul";
 import MenuLateral from "../componentes/menuLateral";
@@ -15,131 +15,160 @@ function GerarComIA() {
 
   const onSubmit = (data) => {
     console.log(data);
-
     alert("Plano de aula gerado com sucesso!");
   };
 
   return (
-    <section>
+    <section className="min-h-screen bg-[#ececec]">
       <MenuAzul />
 
-      <div className="flex">
+      <div className="flex flex-col md:flex-row w-full">
         <MenuLateral />
 
-        <main className="flex justify-center w-full py-10">
-          <div className="bg-gray-200 w-full max-w-[700px] p-8 rounded-md">
-            {/* Título */}
-            <div className="mb-6">
-              <TextGraident
-                Texto="Planejar Aula"
-                TituloOuSubtitulo="titulo"
-                tamanho={"30px"}
-              />
+        <div className="flex-1">
+          <div className="p-4">
+            <BtnAzul children={"Voltar"} />
+          </div>
 
-              <TextGraident
-                Texto="Crie planos de aula estruturados e personalizados"
-                tamanho={"20px"}
-                TituloOuSubtitulo="Subtitulo"
-              />
-            </div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col items-center py-6 px-4"
+          >
+            <TextGraident
+              Texto="Planejar Aula com IA"
+              TituloOuSubtitulo="titulo"
+              tamanho="text-2xl md:text-4xl"
+            />
 
-            {/* Card */}
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="bg-white rounded-2xl p-6 shadow-md"
-            >
-              <TextHr
-                TipoDeText={"Paragrafo"}
-                largura={"270px"}
-                text={"Informações da Aula"}
-              />
+            <div className="w-full max-w-4xl flex flex-col gap-6 mt-4">
+              {/* INFORMAÇÕES PRINCIPAIS */}
+              <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
+                <TextHr
+                  CorDoParagrafo={"#2499F9"}
+                  TipoDeText={"Paragrafo"}
+                  largura={"290px"}
+                  text={"Informações Principais"}
+                />
 
-              <div className="flex flex-col gap-5 mt-6">
-                {/* Disciplina */}
-                <div>
-                  <Input
-                    placeholder={"Digite a disciplina"}
-                    {...register("disciplina", {
-                      required: "A disciplina é obrigatória",
-                    })}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                  <div>
+                    <Input
+                      placeholder="Disciplina"
+                      {...register("disciplina", {
+                        required: "Campo obrigatório",
+                      })}
+                    />
+                    {errors.disciplina && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.disciplina.message}
+                      </p>
+                    )}
+                  </div>
 
-                  {errors.disciplina && (
-                    <span className="text-red-500 text-sm">
-                      {errors.disciplina.message}
-                    </span>
-                  )}
+                  <div>
+                    <Input
+                      placeholder="Série/Turma"
+                      {...register("serie", {
+                        required: "Campo obrigatório",
+                      })}
+                    />
+                    {errors.serie && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.serie.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Input
+                      placeholder="Tema da Aula"
+                      {...register("tema", {
+                        required: "Campo obrigatório",
+                      })}
+                    />
+                    {errors.tema && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.tema.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Input
+                      placeholder="Duração"
+                      {...register("duracao", {
+                        required: "Campo obrigatório",
+                      })}
+                    />
+                    {errors.duracao && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.duracao.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                {/* Série */}
-                <div>
-                  <Input
-                    placeholder={"Digite a série da Turma"}
-                    {...register("serie", {
-                      required: "A série é obrigatória",
-                    })}
+                <div className="flex flex-col gap-5 mt-5">
+                  <textarea
+                    {...register("objetivos")}
+                    placeholder="Objetivos da aula..."
+                    className="w-full min-h-[120px] border border-zinc-300 rounded-lg p-3 resize-none outline-none"
                   />
-
-                  {errors.serie && (
-                    <span className="text-red-500 text-sm">
-                      {errors.serie.message}
-                    </span>
-                  )}
-                </div>
-
-                {/* Tema */}
-                <div>
-                  <Input
-                    placeholder={"Temas Da Aula"}
-                    {...register("tema", {
-                      required: "O tema é obrigatório",
-                    })}
-                  />
-
-                  {errors.tema && (
-                    <span className="text-red-500 text-sm">
-                      {errors.tema.message}
-                    </span>
-                  )}
-                </div>
-
-                {/* Duração */}
-                <div>
-                  <Input
-                    placeholder={"Digite a duração"}
-                    {...register("duracao", {
-                      required: "A duração é obrigatória",
-                    })}
-                  />
-
-                  {errors.duracao && (
-                    <span className="text-red-500 text-sm">
-                      {errors.duracao.message}
-                    </span>
-                  )}
-                </div>
-
-                {/* Objetivos */}
-                <div>
-                  <label className="font-semibold">
-                    Objetivos da Aprendizagem (opcional)
-                  </label>
 
                   <textarea
-                    placeholder="Descreva os objetivos que deseja alcançar..."
-                    className="w-full p-3 rounded-lg bg-gray-100 mt-2 h-28 resize-none outline-none"
-                    {...register("objetivos")}
+                    {...register("habilidades")}
+                    placeholder="Habilidades que deseja desenvolver..."
+                    className="w-full min-h-[120px] border border-zinc-300 rounded-lg p-3 resize-none outline-none"
+                  />
+
+                  <textarea
+                    {...register("observacoes")}
+                    placeholder="Observações para a IA..."
+                    className="w-full min-h-[120px] border border-zinc-300 rounded-lg p-3 resize-none outline-none"
                   />
                 </div>
+              </div>
 
-                <BtnAmarelo
-                  children={"Gerar Plano de Aula"}
+              {/* PREFERÊNCIAS */}
+              <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
+                <TextHr
+                  CorDoParagrafo={"#2499F9"}
+                  TipoDeText={"Paragrafo"}
+                  largura={"250px"}
+                  text={"Preferências da Aula"}
+                />
+
+                <div className="flex flex-col gap-5 mt-5">
+                  <Input
+                    placeholder="Metodologia desejada"
+                    {...register("metodologia")}
+                  />
+
+                  <Input
+                    placeholder="Quantidade de aulas"
+                    type="number"
+                    {...register("quantidadeAulas")}
+                  />
+
+                  <textarea
+                    {...register("recursos")}
+                    placeholder="Materiais ou recursos desejados..."
+                    className="w-full min-h-[120px] border border-zinc-300 rounded-lg p-3 resize-none outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* BOTÃO */}
+              <div className="w-full flex justify-center">
+                <BtnAzul
                   type="submit"
+                  children={"Gerar Plano com IA"}
+                  tamanho="w-full md:w-72"
                 />
               </div>
-            </form>
-          </div>
-        </main>
+            </div>
+          </form>
+        </div>
       </div>
     </section>
   );

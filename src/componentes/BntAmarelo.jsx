@@ -3,7 +3,7 @@ export default function BtnAmarelo({
   onClick,
   type = "button",
   disabled = false,
-  tamanho = "w-auto",
+  tamanho = "w-full sm:w-auto",
 }) {
   return (
     <button
@@ -14,9 +14,11 @@ export default function BtnAmarelo({
         ${tamanho}
         cursor-pointer
         relative flex items-center justify-center
-        h-14 px-6
-        rounded-2xl
-        text-lg font-medium
+        h-12 sm:h-14
+        px-4 sm:px-6
+        rounded-xl sm:rounded-2xl
+        text-base sm:text-lg
+        font-medium
         text-white
         transition-all duration-300
         hover:scale-[1.02]
@@ -24,19 +26,18 @@ export default function BtnAmarelo({
         disabled:opacity-50 disabled:cursor-not-allowed
       `}
     >
-      {/* BORDA GRADIENTE */}
       <span
         className="
-          absolute inset-0 rounded-2xl p-[3px]
+          absolute inset-0 rounded-xl sm:rounded-2xl p-[3px]
           bg-gradient-to-b from-yellow-400 via-yellow-300 to-blue-400
         "
       >
-        {/* FUNDO */}
-        <span className="block w-full h-full rounded-2xl bg-[#0F4C75]" />
+        <span className="block w-full h-full rounded-xl sm:rounded-2xl bg-[#0F4C75]" />
       </span>
 
-      {/* TEXTO */}
-      <span className="relative z-10">{children}</span>
+      <span className="relative z-10 text-center">
+        {children}
+      </span>
     </button>
   );
 }

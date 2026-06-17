@@ -11,6 +11,7 @@ import GerarcomIa from './page/GerarcomIa'
 import VisualizarPerfil from './page/Visualizarperfil'
 import Cadastro from './page/Cadastro'
 import VisualizarBiblioteca from './page/visualizarBlibioteca'
+import GerarAtividade from './page/GerarAtividades'
 import { BrowserRouter, Routes, Route } from "react-router";
 
 import './App.css'
@@ -34,6 +35,7 @@ function App() {
         <Route path='/VisualizarPerfil' element={<VisualizarPerfil/>}/>
         <Route path='/Cadastro' element={<Cadastro/>}/>
         <Route path='/VisualizarBibliotecao' element={<VisualizarBiblioteca/>}/>
+        <Route path='/GerarAtividades' element={<GerarAtividade/>}/>
 
       </Routes>
   </BrowserRouter>

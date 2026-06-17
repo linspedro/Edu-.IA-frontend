@@ -7,7 +7,8 @@ import BtnAzul from "../componentes/bntAzul";
 import { useNavigate } from "react-router";
 
 function PlanejarPrincipal() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+
   return (
     <div className="flex min-h-screen">
       <MenuLateral />
@@ -15,7 +16,7 @@ function PlanejarPrincipal() {
       <section className="flex-1 bg-[#F8FAFC] overflow-auto">
         <MenuAzul />
 
-        <div className="max-w-6xl mx-auto p-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Título */}
           <div className="mb-8">
             <TextHr
@@ -28,69 +29,66 @@ function PlanejarPrincipal() {
           </div>
 
           {/* Cards */}
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+            
             {/* Card Manual */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0px_10px_25px_rgba(0,0,0,0.08)] p-8 max-w-md mx-auto flex flex-col items-center text-center">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0px_10px_25px_rgba(0,0,0,0.08)] p-6 md:p-8 flex flex-col items-center text-center w-full">
+              
               <div className="bg-blue-100 text-[#2F80ED] p-4 rounded-full mb-4">
                 <ClipboardList size={40} />
               </div>
 
-              <h3 className="text-2xl font-semibold text-[#2F80ED]">
-                Criar manualmente
+              <h3 className="text-xl md:text-2xl font-semibold text-[#2F80ED]">
+                Criar Cronograma
               </h3>
 
-              <p className="text-gray-400 mt-2 mb-6 leading-relaxed">
-                Crie seu plano de aula com controle total sobre cada detalhe
+              <p className="text-gray-400 mt-2 mb-6 leading-relaxed text-sm md:text-base">
+                Crie seu Cronograma de aula com controle total sobre cada detalhe
               </p>
 
-              <ul className="space-y-3 text-gray-600 text-left w-full">
+              <ul className="space-y-3 text-gray-600 text-left w-full text-sm md:text-base">
                 <li>✔ Controle total sobre o conteúdo</li>
                 <li>✔ Personalize cada seção</li>
                 <li>✔ Ideal para experiências específicas</li>
               </ul>
 
-              {/* <button className="mt-6 w-full bg-[#2F80ED] text-white py-2.5 rounded-lg hover:bg-blue-700 transition">
-                Começar manualmente
-              </button> */}
-              <div className="mt-6 w-full  text-white py-2.5 justify-center flex rounded-lg">
+              <div className="mt-6 w-full flex justify-center">
                 <BtnAzul
-                  children={"Começar Manualmente"}
-                  onClick={() => {
-                    navigate("/CriarManualmente");
-                  }}
+                  children={"Criar Cronograma"}
+                  onClick={() => navigate("/CriarManualmente")}
                 />
               </div>
             </div>
 
             {/* Card IA */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0px_10px_25px_rgba(0,0,0,0.08)] p-8 max-w-md mx-auto flex flex-col items-center text-center">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0px_10px_25px_rgba(0,0,0,0.08)] p-6 md:p-8 flex flex-col items-center text-center w-full">
+              
               <div className="bg-yellow-100 text-[#F2C94C] p-4 rounded-full mb-4">
                 <Sparkles size={40} />
               </div>
 
-              <h3 className="text-2xl font-semibold text-[#2F80ED]">
+              <h3 className="text-xl md:text-2xl font-semibold text-[#2F80ED]">
                 Gerar com IA
               </h3>
 
-              <p className="text-gray-400 mt-2 mb-6 leading-relaxed">
+              <p className="text-gray-400 mt-2 mb-6 leading-relaxed text-sm md:text-base">
                 Use inteligência artificial para gerar um plano de aula completo
               </p>
 
-              <ul className="space-y-3 text-gray-600 text-left w-full">
+              <ul className="space-y-3 text-gray-600 text-left w-full text-sm md:text-base">
                 <li>✔ Geração rápida e inteligente</li>
                 <li>✔ Baseado em melhores práticas</li>
                 <li>✔ Exportável em PDF após geração</li>
               </ul>
 
-              <div className="mt-6 w-full  items-center flex justify-center text-white py-2.5 rounded-lg ">
+              <div className="mt-6 w-full flex justify-center">
                 <BtnAmarelo
                   children={"Gerar com IA"}
-                  onClick={() => {
-                    navigate("/GerarComIA");
-                  }}
+                  onClick={() => navigate("/GerarComIA")}
                 />
               </div>
             </div>
+
           </div>
         </div>
       </section>

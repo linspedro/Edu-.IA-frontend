@@ -32,94 +32,171 @@ export default function Cadastro() {
   return (
     <div className="w-full min-h-screen bg-[#123d66] flex flex-col font-[Poppins]">
       {/* MENU */}
-      <header className="w-full h-20 bg-gradient-to-r from-[#2d7ac5] to-[#3156b8] flex items-center justify-between px-5 md:px-[70px]">
-        <HeaderLogin />
-      </header>
+      <HeaderLogin />
 
       {/* CONTEÚDO */}
-      <main className="flex-1 flex items-center justify-center p-5">
-        <div className="w-[90%] max-w-[400px] bg-white rounded-[10px] flex flex-col items-center pt-8 px-5 pb-8">
+      <main className="flex-1 flex items-center justify-center p-4 pt-24">
+        <div
+          className="
+            w-full
+            max-w-md
+            bg-white
+            rounded-xl
+            shadow-lg
+            flex
+            flex-col
+            items-center
+            pt-8
+            px-4
+            sm:px-6
+            pb-8
+          "
+        >
           {/* LOGO */}
-          <img src={EduaIA} alt="Logo" className="w-[104px] mb-[10px]" />
+          <img
+            src={EduaIA}
+            alt="Logo"
+            className="w-20 sm:w-24 md:w-28 mb-3"
+          />
 
-          {/* TITULO */}
-          <h2 className="text-[#2499F9] text-[24px] md:text-[30px] leading-[36px] font-semibold mb-[10px]">
+          {/* TÍTULO */}
+          <h2 className="text-[#2499F9] text-2xl md:text-3xl font-semibold mb-2">
             Cadastro
           </h2>
 
           {/* TEXTO */}
-          <p className="text-[15px] md:text-[18px] leading-[28px] text-center mb-5 bg-gradient-to-r from-[#DAE3FF] to-[#2499F9] bg-clip-text text-transparent">
+          <p
+            className="
+              text-sm
+              sm:text-base
+              text-center
+              mb-5
+              bg-gradient-to-r
+              from-[#DAE3FF]
+              to-[#2499F9]
+              bg-clip-text
+              text-transparent
+            "
+          >
             Crie sua conta para continuar
           </p>
 
           {/* FORM */}
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="w-full flex flex-col items-center gap-[5px]"
+            className="w-full flex flex-col gap-2"
           >
-            <div className="w-full flex flex-col items-center">
+            {/* Nome */}
+            <div className="w-full flex flex-col">
               <input
                 type="text"
                 placeholder="Nome"
-                className="w-[85%] max-w-[315px] h-10 bg-[#F5F5F5] border border-[#d1d5db] rounded-[8px] px-5 text-[16px] outline-none mb-1 placeholder:text-[14px] focus:placeholder:opacity-0 transition"
+                className="
+                  w-full
+                  h-11
+                  bg-[#F5F5F5]
+                  border
+                  border-[#d1d5db]
+                  rounded-lg
+                  px-4
+                  text-base
+                  outline-none
+                  focus:placeholder:opacity-0
+                  transition
+                "
                 {...register("Nome", {
                   required: "Nome é obrigatório",
                 })}
               />
 
               {errors.Nome && (
-                <span className="text-red-500 text-sm mb-3">
+                <span className="text-red-500 text-sm mt-1">
                   {errors.Nome.message}
                 </span>
               )}
             </div>
 
-            <div className="w-full flex flex-col items-center">
+            {/* Email */}
+            <div className="w-full flex flex-col">
               <input
                 type="email"
                 placeholder="Email"
-                className="w-[85%] max-w-[315px] h-10 bg-[#F5F5F5] border border-[#d1d5db] rounded-[8px] px-5 text-[16px] outline-none mb-1 placeholder:text-[14px] focus:placeholder:opacity-0 transition"
+                className="
+                  w-full
+                  h-11
+                  bg-[#F5F5F5]
+                  border
+                  border-[#d1d5db]
+                  rounded-lg
+                  px-4
+                  text-base
+                  outline-none
+                  focus:placeholder:opacity-0
+                  transition
+                "
                 {...register("Email", {
                   required: "Email é obrigatório",
                 })}
               />
 
               {errors.Email && (
-                <span className="text-red-500 text-sm mb-3">
+                <span className="text-red-500 text-sm mt-1">
                   {errors.Email.message}
                 </span>
               )}
             </div>
 
-            <div className="w-full flex flex-col items-center">
+            {/* Senha */}
+            <div className="w-full flex flex-col">
               <input
                 type="password"
                 placeholder="Senha"
-                className="w-[85%] max-w-[315px] h-10 bg-[#F5F5F5] border border-[#d1d5db] rounded-[8px] px-5 text-[16px] outline-none mb-1 placeholder:text-[14px] focus:placeholder:opacity-0 transition"
+                className="
+                  w-full
+                  h-11
+                  bg-[#F5F5F5]
+                  border
+                  border-[#d1d5db]
+                  rounded-lg
+                  px-4
+                  text-base
+                  outline-none
+                  focus:placeholder:opacity-0
+                  transition
+                "
                 {...register("Senha", {
                   required: "Senha é obrigatória",
                 })}
               />
 
               {errors.Senha && (
-                <span className="text-red-500 text-sm mb-3">
+                <span className="text-red-500 text-sm mt-1">
                   {errors.Senha.message}
                 </span>
               )}
             </div>
 
+            {/* Link Login */}
             <button
               type="button"
-              className="text-[#3491ff] text-[14px] mb-10 hover:underline hover:text-[#b7d4fd] transition"
+              className="
+                text-[#3491ff]
+                text-sm
+                mt-2
+                mb-6
+                hover:underline
+                hover:text-[#b7d4fd]
+                transition
+              "
               onClick={() => navigate("/Login")}
             >
               Já possui conta?
             </button>
 
-            {/* BOTÃO */}
+            {/* Botão */}
             <BtnAzul
-              children={"Entrar"}
-              tamanho="250px"
+              children="Entrar"
+              tamanho="w-full"
               type="submit"
             />
           </form>

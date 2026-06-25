@@ -6,8 +6,11 @@ import MenuLateral from "../componentes/menuLateral";
 import TextGraident from "../componentes/textGraidient";
 import TextHr from "../componentes/textHr";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 function GerarComIA() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -15,22 +18,25 @@ function GerarComIA() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    console.log("Plano gerado:", data);
     alert("Plano de aula gerado com sucesso!");
   };
 
   return (
     <section className="min-h-screen bg-[#ececec]">
-      <MenuAzul Text={'Gerar com IA'}/>
+      <MenuAzul Text={"Gerar com IA"} />
 
       <div className="flex flex-col md:flex-row w-full">
         <MenuLateral />
+
         <div className="flex-1">
-          <div className="flex">
-            <div className="p-4 flex justify-between gap-2.5 p-4 ">
-              <BtnAzul children={"Voltar"} />
-              <BtnAmarelo children={'Anexar Cronograma'}/>
-            </div>
+          <div className="p-4 flex gap-2.5">
+            <BtnAzul
+              children={"Voltar"}
+              onClick={() => navigate("/PlanejarPrincipal")}
+            />
+
+            <BtnAmarelo children={"Anexar Cronograma"} />
           </div>
 
           <form
@@ -38,7 +44,7 @@ function GerarComIA() {
             className="flex flex-col items-center py-6 px-4"
           >
             <TextGraident
-              Texto="Planejar Aula com IA"
+              Texto="Planejar aula com IA"
               TituloOuSubtitulo="titulo"
               tamanho="text-2xl md:text-4xl"
             />
@@ -61,6 +67,7 @@ function GerarComIA() {
                         required: "Campo obrigatório",
                       })}
                     />
+
                     {errors.disciplina && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.disciplina.message}
@@ -75,6 +82,7 @@ function GerarComIA() {
                         required: "Campo obrigatório",
                       })}
                     />
+
                     {errors.serie && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.serie.message}
@@ -89,6 +97,7 @@ function GerarComIA() {
                         required: "Campo obrigatório",
                       })}
                     />
+
                     {errors.tema && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.tema.message}
@@ -98,11 +107,13 @@ function GerarComIA() {
 
                   <div>
                     <Input
-                      placeholder="Duração"
+                      type="number"
+                      placeholder="Duração (minutos)"
                       {...register("duracao", {
                         required: "Campo obrigatório",
                       })}
                     />
+
                     {errors.duracao && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.duracao.message}
@@ -110,8 +121,15 @@ function GerarComIA() {
                     )}
                   </div>
                 </div>
+              </div>
 
-                <div className="flex flex-col gap-5 mt-5">
+              {/* OBJETIVOS E HABILIDADES */}
+              <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
+                <h3 className="text-xl md:text-2xl font-semibold mb-5">
+                  Objetivos e Habilidades
+                </h3>
+
+                <div className="flex flex-col gap-5">
                   <textarea
                     {...register("objetivos")}
                     placeholder="Objetivos da aula..."
@@ -132,41 +150,45 @@ function GerarComIA() {
                 </div>
               </div>
 
-              {/* PREFERÊNCIAS */}
+              {/* PREFERÊNCIAS DA IA */}
               <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
-                <TextHr
-                  CorDoParagrafo={"#2499F9"}
-                  TipoDeText={"Paragrafo"}
-                  largura={"250px"}
-                  text={"Preferências da Aula"}
-                />
+                <h3 className="text-xl md:text-2xl font-semibold mb-5">
+                  Preferências da IA
+                </h3>
 
-                <div className="flex flex-col gap-5 mt-5">
+                <div className="flex flex-col gap-5">
                   <Input
                     placeholder="Metodologia desejada"
                     {...register("metodologia")}
                   />
 
                   <Input
-                    placeholder="Quantidade de aulas"
                     type="number"
+                    placeholder="Quantidade de aulas"
                     {...register("quantidadeAulas")}
-                  />
-
-                  <textarea
-                    {...register("recursos")}
-                    placeholder="Materiais ou recursos desejados..."
-                    className="w-full min-h-[120px] border border-zinc-300 rounded-lg p-3 resize-none outline-none"
                   />
                 </div>
               </div>
 
-              {/* BOTÃO */}
+              {/* MATERIAIS E RECURSOS */}
+              <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
+                <h3 className="text-xl md:text-2xl font-semibold mb-5">
+                  Materiais e Recursos
+                </h3>
+
+                <textarea
+                  {...register("recursos")}
+                  placeholder="Materiais ou recursos desejados..."
+                  className="w-full min-h-[120px] border border-zinc-300 rounded-lg p-3 resize-none outline-none"
+                />
+              </div>
+
+              {/* BOTÃO FINAL */}
               <div className="w-full flex justify-center">
                 <BtnAzul
                   type="submit"
-                  children={"Gerar Plano com IA"}
-                  tamanho="w-full md:w-72"
+                  children={"Gerar plano com IA"}
+                  tamanho="w-full md:w-64"
                 />
               </div>
             </div>

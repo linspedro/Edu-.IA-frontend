@@ -9,7 +9,7 @@ function VisualizarPerfil() {
 
   return (
     <section className="min-h-screen bg-[#F5F5F5]">
-      <MenuAzul />
+      <MenuAzul Text={'Meu Perfil'}/>
 
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-112px)]">
         <MenuLateral />
@@ -24,7 +24,7 @@ function VisualizarPerfil() {
               <TextGraident
                 Texto="Meu Perfil"
                 TituloOuSubtitulo="titulo"
-                tamanho={"22px md:30px"}
+                tamanho={"text-[30px] md:30px"}
               />
 
               <TextGraident

@@ -9,8 +9,10 @@ import ContainerSection from "../componentes/ContainerFunciona";
 import InfoCard from "../componentes/infoCard";
 import { BookOpen, Eye, Copy } from "lucide-react";
 import Footer from "../componentes/footer";
+import { useNavigate } from "react-router";
 
 function Blibioteca() {
+  const navigate = useNavigate();
   return (
     <section className="bg-gradient-to-r from-[#054D88] to-[#2499F9] min-h-screen">
       <Navbar />
@@ -51,7 +53,10 @@ function Blibioteca() {
 
             {/* Botões */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <BntAzul children="Ver plano" />
+              <BntAzul
+                children="Ver plano"
+                onClick={() => navigate("/Cadastro")}
+              />
 
               <BntAmarelo
                 children="Como Funciona"
@@ -146,16 +151,14 @@ function Blibioteca() {
               <BntAzul
                 children="Entrar na Biblioteca"
                 tamanho="w-full sm:w-64"
+                onClick={() => navigate("/Cadastro")}
               />
             </div>
           </ContainerSection>
         </div>
       </main>
 
-      <Footer
-        bottomText="Copyright © 2026 Edu+.IA"
-        companyName="Edu+.IA"
-      />
+      <Footer bottomText="Copyright © 2026 Edu+.IA" companyName="Edu+.IA" />
     </section>
   );
 }

@@ -8,10 +8,12 @@ import TextHr from "../componentes/textHr";
 import ContainerSection from "../componentes/ContainerFunciona";
 import InfoCard from "../componentes/infoCard";
 import Footer from "../componentes/footer";
+import { useNavigate } from "react-router";
 
 import { Pencil, SlidersHorizontal, Target } from "lucide-react";
 
 function C_Plano() {
+const navigate = useNavigate();
   return (
     <section className="bg-gradient-to-r from-[#054D88] to-[#2499F9] min-h-screen">
       <Navbar />
@@ -52,7 +54,10 @@ function C_Plano() {
 
             {/* Botões */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <BntAzul children="Criar planos" />
+              <BntAzul
+                children="Criar planos"
+                onClick={() => navigate("/Cadastro")}
+              />
 
               <BntAmarelo
                 children="Como Funciona"
@@ -147,16 +152,14 @@ function C_Plano() {
               <BntAzul
                 children="Criar Planos"
                 tamanho="w-full sm:w-40"
+                onClick={() => navigate("/Cadastro")}
               />
             </div>
           </ContainerSection>
         </div>
       </main>
 
-      <Footer
-        bottomText="Copyright © 2026 Edu+.IA"
-        companyName="Edu+.IA"
-      />
+      <Footer bottomText="Copyright © 2026 Edu+.IA" companyName="Edu+.IA" />
     </section>
   );
 }

@@ -11,7 +11,6 @@ function BibliotecaPrincipal() {
       serie: "3º Ensino Médio",
       data: "Maio • Criado em 22/04/2026",
       tipo: "Plano de Aula",
-      
     },
     {
       titulo: "2º Guerra Mundial",
@@ -38,20 +37,30 @@ function BibliotecaPrincipal() {
       data: "Julho • Criado em 20/06/2026",
       tipo: "Cronograma",
     },
+    {
+      titulo: "Campeonato De Matematica",
+      serie: "3º Ensino Médio",
+      data: "Julho • Criado em 30/07/2026",
+      tipo: "Atividade",
+    },
   ];
 
   const [busca, setBusca] = useState("");
 
   const dadosFiltrados = planos.filter((item) =>
-    item.titulo.toLowerCase().includes(busca.toLowerCase())
+    item.titulo.toLowerCase().includes(busca.toLowerCase()),
   );
 
   const planosDeAula = dadosFiltrados.filter(
-    (item) => item.tipo === "Plano de Aula"
+    (item) => item.tipo === "Plano de Aula",
   );
 
   const cronogramas = dadosFiltrados.filter(
-    (item) => item.tipo === "Cronograma"
+    (item) => item.tipo === "Cronograma",
+  );
+
+    const Atividade = dadosFiltrados.filter(
+    (item) => item.tipo === "Atividade",
   );
 
   return (
@@ -85,9 +94,7 @@ function BibliotecaPrincipal() {
 
           {/* Planos de Aula */}
           <div>
-            <h3 className="text-2xl font-bold mb-5">
-               Planos de Aula
-            </h3>
+            <h3 className="text-2xl font-bold mb-5">Planos de Aula</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {planosDeAula.map((item, index) => (
@@ -105,12 +112,28 @@ function BibliotecaPrincipal() {
 
           {/* Cronogramas */}
           <div>
-            <h3 className="text-2xl font-bold mb-5">
-               Cronogramas
-            </h3>
+            <h3 className="text-2xl font-bold mb-5">Cronogramas</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {cronogramas.map((item, index) => (
+                <CardPlano
+                  key={index}
+                  titulo={item.titulo}
+                  serie={item.serie}
+                  data={item.data}
+                  tipo={item.tipo}
+                  navega={item.navega}
+                />
+              ))}
+            </div>
+          </div>
+
+                    {/* ATIVIDADE */}
+          <div>
+            <h3 className="text-2xl font-bold mb-5">Atividades</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {Atividade.map((item, index) => (
                 <CardPlano
                   key={index}
                   titulo={item.titulo}

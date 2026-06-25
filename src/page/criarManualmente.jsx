@@ -6,8 +6,10 @@ import TextGraident from "../componentes/textGraidient";
 import BtnAmarelo from "../componentes/BntAmarelo";
 import BtnAzul from "../componentes/bntAzul";
 import { useForm, useFieldArray } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 function CriarManualmente() {
+  const navigate = useNavigate();
   const { register, handleSubmit, control } = useForm({
     defaultValues: {
       aulas: [],
@@ -33,7 +35,7 @@ function CriarManualmente() {
 
         <div className="flex-1">
           <div className="p-4">
-            <BtnAzul children={"Voltar"} />
+            <BtnAzul children={"Voltar"} onClick={() => {navigate('/PlanejarPrincipal')}}/>
           </div>
 
           <form

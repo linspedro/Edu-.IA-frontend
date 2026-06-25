@@ -8,10 +8,12 @@ import TextHr from "../componentes/textHr";
 import ContainerSection from "../componentes/ContainerFunciona";
 import InfoCard from "../componentes/infoCard";
 import Footer from "../componentes/footer";
+import { useNavigate } from "react-router";
 
 import { Pencil, Cpu, BookOpen } from "lucide-react";
 
 function G_Plano() {
+  const navigate = useNavigate();
   return (
     <section className="bg-gradient-to-r from-[#054D88] to-[#2499F9] min-h-screen">
       <Navbar />
@@ -55,6 +57,7 @@ function G_Plano() {
               <BntAzul
                 children="Criar Plano Agora"
                 tamanho="w-full sm:w-52"
+                onClick={() => navigate("/Cadastro")}
               />
 
               <BntAmarelo
@@ -153,6 +156,7 @@ function G_Plano() {
               <BntAzul
                 children="Gerar Planos"
                 tamanho="w-full sm:w-52"
+                onClick={() => navigate("/Cadastro")}
               />
             </div>
           </ContainerSection>

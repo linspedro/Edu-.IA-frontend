@@ -39,7 +39,7 @@ export default function Navbar({ font = "Poppins" }) {
                 to="/Gplano"
                 end
               >
-                G.Planos
+                C.Aulas
               </NavLink>
             </li>
 
@@ -50,7 +50,7 @@ export default function Navbar({ font = "Poppins" }) {
                 to="/Cplano"
                 end
               >
-                C.Planos
+                C.Planejamento
               </NavLink>
             </li>
           </ul>

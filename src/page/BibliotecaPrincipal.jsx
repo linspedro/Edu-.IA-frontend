@@ -17,6 +17,7 @@ function BibliotecaPrincipal() {
       serie: "2º Ensino Médio",
       data: "Abril • Criado em 22/04/2026",
       tipo: "Plano de Aula",
+      navega: "/VisualizarPlano"
     },
     {
       titulo: "DNA e RNA",
@@ -42,6 +43,7 @@ function BibliotecaPrincipal() {
       serie: "3º Ensino Médio",
       data: "Julho • Criado em 30/07/2026",
       tipo: "Atividade",
+      navega: "/VisualizarAtividade"
     },
   ];
 
@@ -94,7 +96,7 @@ function BibliotecaPrincipal() {
 
           {/* Planos de Aula */}
           <div>
-            <h3 className="text-2xl font-bold mb-5">Planos de Aula</h3>
+            <h3 className="text-2xl font-bold mb-5">Aulas Criadas </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {planosDeAula.map((item, index) => (
@@ -112,7 +114,7 @@ function BibliotecaPrincipal() {
 
           {/* Cronogramas */}
           <div>
-            <h3 className="text-2xl font-bold mb-5">Cronogramas</h3>
+            <h3 className="text-2xl font-bold mb-5">Planejamento</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {cronogramas.map((item, index) => (

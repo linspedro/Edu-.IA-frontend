@@ -127,10 +127,7 @@ function GerarAtividade() {
                     Configuração da Atividade
                   </h3>
 
-                  <BtnAmarelo
-                    type="button"
-                    children={"Anexar Material"}
-                  />
+
                 </div>
 
                 <div className="flex flex-col gap-5">

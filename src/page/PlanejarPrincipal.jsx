@@ -39,11 +39,11 @@ function PlanejarPrincipal() {
               </div>
 
               <h3 className="text-xl md:text-2xl font-semibold text-[#2F80ED]">
-                Criar Cronograma
+                Criar Planejamento
               </h3>
 
               <p className="text-gray-400 mt-2 mb-6 leading-relaxed text-sm md:text-base">
-                Crie seu Cronograma de aula com controle total sobre cada detalhe
+                Crie seu Planejamento de aula com controle total sobre cada detalhe
               </p>
 
               <ul className="space-y-3 text-gray-600 text-left w-full text-sm md:text-base">
@@ -54,7 +54,7 @@ function PlanejarPrincipal() {
 
               <div className="mt-6 w-full flex justify-center">
                 <BtnAzul
-                  children={"Criar Cronograma"}
+                  children={"Criar Planejamento"}
                   onClick={() => navigate("/CriarManualmente")}
                 />
               </div>
@@ -68,11 +68,11 @@ function PlanejarPrincipal() {
               </div>
 
               <h3 className="text-xl md:text-2xl font-semibold text-[#2F80ED]">
-                Gerar com IA
+                Criar Aulas 
               </h3>
 
               <p className="text-gray-400 mt-2 mb-6 leading-relaxed text-sm md:text-base">
-                Use inteligência artificial para gerar um plano de aula completo
+                Use inteligência artificial para gerar uma aula completa
               </p>
 
               <ul className="space-y-3 text-gray-600 text-left w-full text-sm md:text-base">
@@ -83,7 +83,7 @@ function PlanejarPrincipal() {
 
               <div className="mt-6 w-full flex justify-center">
                 <BtnAmarelo
-                  children={"Gerar com IA"}
+                  children={"Criar Aula"}
                   onClick={() => navigate("/GerarComIA")}
                 />
               </div>

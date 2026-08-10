@@ -12,12 +12,11 @@ function PaginaPrincipal() {
 
   return (
     <div className="flex min-h-screen">
-      <MenuLateral/>
+      <MenuLateral />
 
       <section className="flex-1 p-6 bg-[#3184C7] flex flex-col gap-4 overflow-auto">
         {/* HEADER */}
         <div className="flex justify-between items-start max-w-6xl mx-auto w-full">
-
           <div className="text-white flex flex-col gap-2.5">
             <h2 className="text-4xl">Bem-vindo ao Edu+</h2>
 
@@ -37,7 +36,7 @@ function PaginaPrincipal() {
           </div>
         </div>
 
-          {/* HERO CORRIGIDO */}
+        {/* HERO CORRIGIDO */}
         <div className="flex flex-col md:flex-row justify-between max-w-6xl w-full mt-10">
           {/* CARD PROF */}
           <div className="bg-[#054D88] text-white text-2xl w-[200px] h-28 px-4 py-3 rounded-lg shadow-md flex items-center">
@@ -73,6 +72,15 @@ function PaginaPrincipal() {
             icon={<BookOpen size={28} className="text-white" />}
             onClick={() => {
               navigate("/BibliotecaPrincipal");
+            }}
+          />
+
+          <InfoCard
+            title={"Atividades"}
+            description={"Obtenha mais ideias"}
+            icon={<BookOpen size={28} className="text-white" />}
+            onClick={() => {
+              navigate("/GerarAtividades")
             }}
           />
         </div>

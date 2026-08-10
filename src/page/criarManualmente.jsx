@@ -216,7 +216,7 @@ function CriarManualmente() {
               <div className="w-full flex justify-center">
                 <BtnAzul
                   type="submit"
-                  children={"Salvar plano"}
+                  children={"Salvar Cronograma"}
                   tamanho="w-full md:w-64"
                 />
               </div>

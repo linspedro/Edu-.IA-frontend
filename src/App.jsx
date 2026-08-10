@@ -12,6 +12,8 @@ import VisualizarPerfil from './page/Visualizarperfil'
 import Cadastro from './page/Cadastro'
 import VisualizarBiblioteca from './page/visualizarBlibioteca'
 import GerarAtividade from './page/GerarAtividades'
+import VisualizarPlano from './page/VisualizarPlano'
+import VisualizarAtividade from './page/VisualizarAtividade'
 import { BrowserRouter, Routes, Route } from "react-router";
 
 import './App.css'
@@ -36,6 +38,8 @@ function App() {
         <Route path='/Cadastro' element={<Cadastro/>}/>
         <Route path='/VisualizarBibliotecao' element={<VisualizarBiblioteca/>}/>
         <Route path='/GerarAtividades' element={<GerarAtividade/>}/>
+        <Route path='/VisualizarPlano' element={<VisualizarPlano/>}/>
+        <Route path='/VisualizarAtividade' element={<VisualizarAtividade/>}/>
 
       </Routes>
   </BrowserRouter>

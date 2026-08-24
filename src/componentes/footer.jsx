@@ -1,10 +1,6 @@
 export default function Footer({
   companyName = "Minha Empresa",
-  links = [
-    { name: "Gerador de Planos", href: "#" },
-    { name: "Criador de Planos", href: "#" },
-    { name: "Biblioteca", href: "#" },
-  ],
+
   bottomText = "Todos os direitos reservados."
 }) {
   return (
@@ -40,15 +36,7 @@ export default function Footer({
               text-center
             "
           >
-            {links.map((link, index) => (
-              <a
-                key={index}
-                href={link.href}
-                className="hover:opacity-70 transition"
-              >
-                {link.name}
-              </a>
-            ))}
+
           </nav>
         </div>
 

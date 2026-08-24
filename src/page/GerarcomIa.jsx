@@ -36,7 +36,7 @@ function GerarComIA() {
               onClick={() => navigate("/PlanejarPrincipal")}
             />
 
-            <BtnAmarelo children={"Anexar Cronograma"} />
+           
           </div>
 
           <form

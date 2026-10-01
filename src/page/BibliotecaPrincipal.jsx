@@ -1,69 +1,105 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MenuLateral from "../componentes/menuLateral";
 import MenuAzul from "../componentes/MenuAzul";
 import Input from "../componentes/input";
 import CardPlano from "../componentes/CardPlano";
+import PlanejamentoApi from "../api/modelos/Planejamento";
+import AulaApi from "../api/modelos/Aula";
+import AtividadeApi from "../api/modelos/Atividade";
+import { useAuth } from "../contexts/AuthContext";
+
+function formatarData(dataISO) {
+  const d = new Date(dataISO);
+  return d.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
 
 function BibliotecaPrincipal() {
-  const planos = [
-    {
-      titulo: "Química ecológica",
-      serie: "3º Ensino Médio",
-      data: "Maio • Criado em 22/04/2026",
-      tipo: "Plano de Aula",
-    },
-    {
-      titulo: "2º Guerra Mundial",
-      serie: "2º Ensino Médio",
-      data: "Abril • Criado em 22/04/2026",
-      tipo: "Plano de Aula",
-      navega: "/VisualizarPlano"
-    },
-    {
-      titulo: "DNA e RNA",
-      serie: "1º Ensino Médio",
-      data: "Abril • Criado em 22/04/2026",
-      tipo: "Plano de Aula",
-    },
-    {
-      titulo: "Cronograma de Biologia",
-      serie: "3º Ensino Médio",
-      data: "Junho • Criado em 18/06/2026",
-      tipo: "Cronograma",
-      navega: "/VisualizarBibliotecao",
-    },
-    {
-      titulo: "Cronograma ENEM",
-      serie: "3º Ensino Médio",
-      data: "Julho • Criado em 20/06/2026",
-      tipo: "Cronograma",
-    },
-    {
-      titulo: "Campeonato De Matematica",
-      serie: "3º Ensino Médio",
-      data: "Julho • Criado em 30/07/2026",
-      tipo: "Atividade",
-      navega: "/VisualizarAtividade"
-    },
-  ];
+  const { usuario } = useAuth();
 
+  const [planosDeAula, setPlanosDeAula] = useState([]);
+  const [cronogramas, setCronogramas] = useState([]);
+  const [atividades, setAtividades] = useState([]);
   const [busca, setBusca] = useState("");
 
-  const dadosFiltrados = planos.filter((item) =>
-    item.titulo.toLowerCase().includes(busca.toLowerCase()),
-  );
+  useEffect(() => {
+    async function carregarDados() {
+      // ainda sem filtro por usuário (temporário)
+      const respostaAulas = await AulaApi.listar();
+      if (respostaAulas.status === 200) {
+        setPlanosDeAula(
+          respostaAulas.data.map((aula) => ({
+            id: aula.id_aula,
+            titulo: aula.titulo_da_aula,
+            serie: aula.turma,
+            data: `${aula.materia} • Criado em ${formatarData(aula.data_criacao)}`,
+            navega: "/VisualizarPlano",
+          })),
+        );
+      }
 
-  const planosDeAula = dadosFiltrados.filter(
-    (item) => item.tipo === "Plano de Aula",
-  );
+      // já filtrado pelo usuário logado
+      const respostaPlanejamentos = await PlanejamentoApi.listarPorUsuario(
+        usuario.id,
+      );
+      if (respostaPlanejamentos.status === 200) {
+        setCronogramas(
+          respostaPlanejamentos.data.map((p) => ({
+            id: p.id_planejamento,
+            titulo: `${p.materia} - ${p.turma}`,
+            serie: p.turma,
+            data: `${p.periodo} • Criado em ${formatarData(p.data_criacao)}`,
+            navega: "/VisualizarBibliotecao",
+          })),
+        );
+      }
 
-  const cronogramas = dadosFiltrados.filter(
-    (item) => item.tipo === "Cronograma",
-  );
+      // ainda sem filtro por usuário (temporário)
+      const respostaAtividades = await AtividadeApi.listar();
+      if (respostaAtividades.status === 200) {
+        setAtividades(
+          respostaAtividades.data.map((a) => ({
+            id: a.id_atividade,
+            titulo: a.titulo_da_atividade,
+            serie: a.turma,
+            data: `${a.materia} • Criado em ${formatarData(a.data_criacao)}`,
+            navega: "/VisualizarAtividade",
+          })),
+        );
+      }
+    }
 
-    const Atividade = dadosFiltrados.filter(
-    (item) => item.tipo === "Atividade",
-  );
+    carregarDados();
+  }, [usuario.id]);
+
+  const filtrar = (lista) =>
+    lista.filter((item) =>
+      item.titulo.toLowerCase().includes(busca.toLowerCase()),
+    );
+
+  async function excluirAula(id) {
+    const resposta = await AulaApi.deletar(id);
+    if (resposta.status === 204) {
+      setPlanosDeAula((atual) => atual.filter((item) => item.id !== id));
+    }
+  }
+
+  async function excluirPlanejamento(id) {
+    const resposta = await PlanejamentoApi.deletar(id);
+    if (resposta.status === 204) {
+      setCronogramas((atual) => atual.filter((item) => item.id !== id));
+    }
+  }
+
+  async function excluirAtividade(id) {
+    const resposta = await AtividadeApi.deletar(id);
+    if (resposta.status === 204) {
+      setAtividades((atual) => atual.filter((item) => item.id !== id));
+    }
+  }
 
   return (
     <section className="flex flex-col md:flex-row min-h-screen bg-white">
@@ -88,71 +124,42 @@ function BibliotecaPrincipal() {
                 onChange={(e) => setBusca(e.target.value)}
               />
             </div>
-
-            <h3 className="text-xl font-medium">
-              Edu+IA, sua plataforma de desenvolvimento.
-            </h3>
           </div>
 
-          {/* Planos de Aula */}
           <div>
-            <h3 className="text-2xl font-bold mb-5">Aulas Criadas </h3>
-
+            <h3 className="text-2xl font-bold mb-5">Aulas Criadas</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {planosDeAula.map((item, index) => (
-                <CardPlano
-                  key={index}
-                  titulo={item.titulo}
-                  serie={item.serie}
-                  data={item.data}
-                  tipo={item.tipo}
-                  navega={item.navega}
-                />
+              {filtrar(planosDeAula).map((item) => (
+                <CardPlano key={item.id} {...item} onExcluir={excluirAula} />
               ))}
             </div>
           </div>
 
-          {/* Cronogramas */}
           <div>
             <h3 className="text-2xl font-bold mb-5">Planejamento</h3>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {cronogramas.map((item, index) => (
+              {filtrar(cronogramas).map((item) => (
                 <CardPlano
-                  key={index}
-                  titulo={item.titulo}
-                  serie={item.serie}
-                  data={item.data}
-                  tipo={item.tipo}
-                  navega={item.navega}
+                  key={item.id}
+                  {...item}
+                  onExcluir={excluirPlanejamento}
                 />
               ))}
             </div>
           </div>
 
-                    {/* ATIVIDADE */}
           <div>
             <h3 className="text-2xl font-bold mb-5">Atividades</h3>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {Atividade.map((item, index) => (
+              {filtrar(atividades).map((item) => (
                 <CardPlano
-                  key={index}
-                  titulo={item.titulo}
-                  serie={item.serie}
-                  data={item.data}
-                  tipo={item.tipo}
-                  navega={item.navega}
+                  key={item.id}
+                  {...item}
+                  onExcluir={excluirAtividade}
                 />
               ))}
             </div>
           </div>
-
-          {dadosFiltrados.length === 0 && (
-            <p className="text-center text-red-500 font-medium">
-              Nenhum resultado encontrado.
-            </p>
-          )}
         </div>
       </div>
     </section>

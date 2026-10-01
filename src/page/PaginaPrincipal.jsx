@@ -5,10 +5,13 @@ import IAImg from "../assets/imgPrincipal.png";
 import { useNavigate } from "react-router";
 
 import { BookOpen, Book, Sparkles } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 function PaginaPrincipal() {
   const today = new Date().toLocaleDateString();
   let navigate = useNavigate();
+
+  const { usuario } = useAuth();
 
   return (
     <div className="flex min-h-screen">
@@ -40,7 +43,7 @@ function PaginaPrincipal() {
         <div className="flex flex-col md:flex-row justify-between max-w-6xl w-full mt-10">
           {/* CARD PROF */}
           <div className="bg-[#054D88] text-white text-2xl w-[200px] h-28 px-4 py-3 rounded-lg shadow-md flex items-center">
-            Bem-vindo <br /> Prof Nome
+            Bem-vindo <br /> {usuario.nome}
           </div>
 
           {/* IMAGEM CORRIGIDA */}

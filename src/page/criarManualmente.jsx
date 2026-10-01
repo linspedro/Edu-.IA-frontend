@@ -7,11 +7,19 @@ import BtnAmarelo from "../componentes/BntAmarelo";
 import BtnAzul from "../componentes/bntAzul";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { useAuth } from "../contexts/AuthContext";
+import PlanejamentoApi from "../api/modelos/Planejamento";
+import PlanejamentoConteudoApi from "../api/modelos/PlanejamentoConteudo";
+import { useState } from "react";
 
 function CriarManualmente() {
   const navigate = useNavigate();
+  const [notificacao, setNotificacao] = useState(false);
 
-  const { register, handleSubmit, control } = useForm({
+  const { usuario } = useAuth();
+  console.log(usuario);
+
+  const { register, handleSubmit, control, watch } = useForm({
     defaultValues: {
       aulas: [],
     },
@@ -22,16 +30,56 @@ function CriarManualmente() {
     name: "aulas",
   });
 
-  const onSubmit = (data) => {
-    console.log("Plano criado:", data);
+  const onSubmit = async () => {
+    const respostaPlanejamento = await PlanejamentoApi.criar({
+      idusuario: usuario.id,
+      periodo: watch("periodo"),
+      turma: watch("turma"),
+      materia: watch("disciplina"),
+      trimestre: watch("trimestre"),
+      componentesCurriculares: watch("componentes"),
+      habilidades: watch("habilidades"),
+      objetivos: watch("objetivos"),
+      quantidadeDeAulas: watch("quantidadeAulas"),
+      provasETrabalhos: watch("avaliacoes"),
+      formativaSomativa: watch("tipoAvaliacao"),
+      criterios: watch("criterios"),
+      materiaisNecessarios: watch("materiais"),
+    });
 
-    alert("Plano salvo com sucesso!");
+    if (respostaPlanejamento.status !== 201) {
+      console.log("Erro ao criar planejamento:", respostaPlanejamento.data);
+      return;
+    }
 
-    console.log("Aulas:", data.aulas);
+    
+    const idPlanejamentoCriado = respostaPlanejamento.data.id_planejamento;
+    
+    const aulas = watch("aulas");
+    for (const aula of aulas) {
+      await PlanejamentoConteudoApi.criar({
+        id_planejamento: idPlanejamentoCriado,
+        titulo: aula.encaminhamentoPedagogico,
+        data: aula.data,
+      });
+    }
+
+  setNotificacao(true);
+  
+    setTimeout(() => {
+      setNotificacao(false)
+    }, 3000);
   };
 
   return (
     <section className="min-h-screen bg-[#ececec]">
+
+      {notificacao && (
+        <div className="fixed top-5 right-5 z-50 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg">
+          ✓ Planejamento criado com sucesso!
+        </div>
+      )}
+
       <MenuAzul Text={"Cronogramas"} />
 
       <div className="flex flex-col md:flex-row w-full">
@@ -59,7 +107,6 @@ function CriarManualmente() {
             />
 
             <div className="w-full max-w-4xl flex flex-col gap-6 mt-4">
-              
               {/* =========================================
                   INFORMAÇÕES PRINCIPAIS
               ========================================= */}
@@ -72,7 +119,6 @@ function CriarManualmente() {
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                  
                   <Input
                     {...register("periodo", {
                       required: true,
@@ -103,7 +149,6 @@ function CriarManualmente() {
                 </div>
 
                 <div className="flex flex-col gap-5 mt-5">
-                  
                   <textarea
                     {...register("componentes")}
                     placeholder="Componentes curriculares..."
@@ -136,9 +181,7 @@ function CriarManualmente() {
                   PLANOS E ESTRATÉGIAS
               ========================================= */}
               <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
-                
                 <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-5">
-                  
                   <h3 className="text-xl md:text-2xl font-semibold">
                     Planos e Estratégias
                   </h3>
@@ -193,12 +236,9 @@ function CriarManualmente() {
                     <textarea
                       placeholder="Ex: Química ecológica"
                       className="w-full min-h-[120px] border border-zinc-300 rounded-lg p-3 resize-none outline-none"
-                      {...register(
-                        `aulas.${index}.encaminhamentoPedagogico`,
-                        {
-                          required: true,
-                        }
-                      )}
+                      {...register(`aulas.${index}.encaminhamentoPedagogico`, {
+                        required: true,
+                      })}
                     />
 
                     {/* REMOVER */}
@@ -217,7 +257,6 @@ function CriarManualmente() {
                   PROCESSO AVALIATIVO
               ========================================= */}
               <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
-                
                 <h3 className="text-xl md:text-2xl font-semibold mb-5">
                   Processo Avaliativo
                 </h3>
@@ -252,7 +291,6 @@ function CriarManualmente() {
                   MATERIAIS
               ========================================= */}
               <div className="bg-white border border-zinc-300 rounded-xl p-4 md:p-6">
-                
                 <h3 className="text-xl md:text-2xl font-semibold mb-5">
                   Materiais e Recursos
                 </h3>
@@ -276,7 +314,6 @@ function CriarManualmente() {
                   tamanho="w-full md:w-64"
                 />
               </div>
-
             </div>
           </form>
         </div>

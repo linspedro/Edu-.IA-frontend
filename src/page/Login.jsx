@@ -5,19 +5,23 @@ import EduaIA from "../assets/EduIA.png";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 
+import usuariosAPI from "../api/modelos/usuario";
+import { useAuth } from "../contexts/AuthContext";
+
 function Login() {
   const navigation = useNavigate();
+
+  const { login } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
+    watch,
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
-
+  const onSubmit = async (data) => {
     if (data.Senha.length < 6) {
       setError("Senha", {
         type: "manual",
@@ -27,7 +31,20 @@ function Login() {
       return;
     }
 
-    navigation("/Principal");
+    const resposta = await usuariosAPI.login(watch("Email"), watch("Senha"));
+
+
+    if (resposta.status !== 200) {
+      setError("Senha", {
+        type: "manual",
+        message: resposta.data.erro,
+      });
+    }
+
+    if (resposta.status === 200) {
+      login(resposta.data.usuario);
+      navigation("/Principal");
+    }
   };
 
   return (
@@ -51,11 +68,7 @@ function Login() {
       >
         {/* Logo */}
         <div className="flex justify-center">
-          <img
-            src={EduaIA}
-            alt="Edu+IA"
-            className="w-24 md:w-32 h-auto"
-          />
+          <img src={EduaIA} alt="Edu+IA" className="w-24 md:w-32 h-auto" />
         </div>
 
         {/* Title */}
@@ -71,10 +84,7 @@ function Login() {
         </div>
 
         {/* Form */}
-        <form
-          className="flex flex-col gap-5"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <Input
               type="email"
@@ -119,11 +129,7 @@ function Login() {
             </button>
           </div>
 
-          <BntAmarelo
-            children={"Entrar"}
-            type="submit"
-            tamanho="w-full"
-          />
+          <BntAmarelo children={"Entrar"} type="submit" tamanho="w-full" />
         </form>
       </div>
     </div>

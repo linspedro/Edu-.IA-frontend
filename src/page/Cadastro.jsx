@@ -2,20 +2,24 @@ import { HeaderLogin } from "../componentes/headerLogin";
 import EduaIA from "../assets/EduIA.png";
 import BtnAzul from "../componentes/bntAzul";
 import { useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
+import { useForm, } from "react-hook-form";
+import usuariosAPI from "../api/modelos/usuario";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Cadastro() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
+    watch,
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+
 
     if (data.Senha.length < 6) {
       setError("Senha", {
@@ -26,7 +30,24 @@ export default function Cadastro() {
       return;
     }
 
-    navigate("/Principal");
+    const resposta = await usuariosAPI.cadastro(
+      watch("Email"),
+      watch("Senha"),
+      watch("Nome"),
+    );
+
+    if (resposta.status !== 201) {
+      setError("Senha", {
+        type: "manual",
+        message: resposta.data.erro,
+      });
+    }
+
+    if(resposta.status === 201) {
+      login(resposta.data.usuario)
+      navigate("/Principal")
+    }
+
   };
 
   return (
@@ -53,11 +74,7 @@ export default function Cadastro() {
           "
         >
           {/* LOGO */}
-          <img
-            src={EduaIA}
-            alt="Logo"
-            className="w-20 sm:w-24 md:w-28 mb-3"
-          />
+          <img src={EduaIA} alt="Logo" className="w-20 sm:w-24 md:w-28 mb-3" />
 
           {/* TÍTULO */}
           <h2 className="text-[#2499F9] text-2xl md:text-3xl font-semibold mb-2">
@@ -194,11 +211,7 @@ export default function Cadastro() {
             </button>
 
             {/* Botão */}
-            <BtnAzul
-              children="Entrar"
-              tamanho="w-full"
-              type="submit"
-            />
+            <BtnAzul children="Entrar" tamanho="w-full" type="submit" />
           </form>
         </div>
       </main>

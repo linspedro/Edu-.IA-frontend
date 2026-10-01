@@ -4,12 +4,16 @@ import BntAzul from "./bntAzul";
 import Edu from "../assets/Edu.png";
 import { useNavigate } from "react-router";
 import BtnAmarelo from "./BntAmarelo";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function MenuLateral() {
+  const {usuario} = useAuth()
   const navigate = useNavigate();
 
   const [abrirPerfil, setAbrirPerfil] = useState(false);
   const [menuMobileAberto, setMenuMobileAberto] = useState(false);
+
+  const {logout} = useAuth()
 
   return (
     <>
@@ -141,12 +145,12 @@ export default function MenuLateral() {
 
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-blue-400 flex items-center justify-center">
-                  U
+                  {usuario.nome[0]}
                 </div>
 
                 <div>
                   <h2 className="text-lg md:text-xl font-bold">
-                    Usuário
+                    {usuario.nome}
                   </h2>
                 </div>
               </div>
@@ -161,7 +165,10 @@ export default function MenuLateral() {
                 <BntAzul
                   tamanho="w-full"
                   children="Sair da conta"
-                  onClick={() => navigate("/")}
+                  onClick={() => {
+                    logout()
+                    navigate("/")
+                  }}
                 />
               </div>
             </div>

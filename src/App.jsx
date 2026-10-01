@@ -1,49 +1,62 @@
-import { useState } from 'react'
-import Blibioteca from './page/Blibioteca'
-import G_Plano from './page/G_Plano'
-import C_Plano from './page/C_Plano'
-import Login from './page/Login'
-import PaginaPrincipal from './page/PaginaPrincipal'
-import BibliotecaPrincipal from './page/BibliotecaPrincipal'
-import PlanejarPrincipal from './page/PlanejarPrincipal'
-import CriarManualmente from './page/criarManualmente'
-import GerarcomIa from './page/GerarcomIa'
-import VisualizarPerfil from './page/Visualizarperfil'
-import Cadastro from './page/Cadastro'
-import VisualizarBiblioteca from './page/visualizarBlibioteca'
-import GerarAtividade from './page/GerarAtividades'
-import VisualizarPlano from './page/VisualizarPlano'
-import VisualizarAtividade from './page/VisualizarAtividade'
+import { useState } from "react";
+import Blibioteca from "./page/Blibioteca";
+import G_Plano from "./page/G_Plano";
+import C_Plano from "./page/C_Plano";
+import Login from "./page/Login";
+import PaginaPrincipal from "./page/PaginaPrincipal";
+import BibliotecaPrincipal from "./page/BibliotecaPrincipal";
+import PlanejarPrincipal from "./page/PlanejarPrincipal";
+import CriarManualmente from "./page/criarManualmente";
+import GerarcomIa from "./page/GerarcomIa";
+import VisualizarPerfil from "./page/Visualizarperfil";
+import Cadastro from "./page/Cadastro";
+import VisualizarBiblioteca from "./page/visualizarBlibioteca";
+import GerarAtividade from "./page/GerarAtividades";
+import VisualizarPlano from "./page/VisualizarPlano";
+import VisualizarAtividade from "./page/VisualizarAtividade";
 import { BrowserRouter, Routes, Route } from "react-router";
 
-import './App.css'
+import { RotaProtegida } from "./componentes/RotaProtegida";
+
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-    // 
+    //
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Blibioteca/>} />
+        <Route path="/" element={<Blibioteca />} />
+        <Route path="/Login" element={<Login />} />
         <Route path="/Gplano" element={<G_Plano />} />
         <Route path="/Cplano" element={<C_Plano />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Principal" element={<PaginaPrincipal />} />
-        <Route path='/BibliotecaPrincipal' element={<BibliotecaPrincipal/>}/>
-        <Route path='/PlanejarPrincipal' element={<PlanejarPrincipal/>}/>
-        <Route path='/CriarManualmente' element={<CriarManualmente/>}/>
-        <Route path='/GerarComIA' element={<GerarcomIa/>}/>
-        <Route path='/VisualizarPerfil' element={<VisualizarPerfil/>}/>
-        <Route path='/Cadastro' element={<Cadastro/>}/>
-        <Route path='/VisualizarBibliotecao' element={<VisualizarBiblioteca/>}/>
-        <Route path='/GerarAtividades' element={<GerarAtividade/>}/>
-        <Route path='/VisualizarPlano' element={<VisualizarPlano/>}/>
-        <Route path='/VisualizarAtividade' element={<VisualizarAtividade/>}/>
+        <Route path="/Cadastro" element={<Cadastro />} />
 
+        <Route element={<RotaProtegida />}>
+          <Route path="/Principal" element={<PaginaPrincipal />} />
+          <Route
+            path="/BibliotecaPrincipal"
+            element={<BibliotecaPrincipal />}
+          />
+          <Route path="/PlanejarPrincipal" element={<PlanejarPrincipal />} />
+          <Route path="/CriarManualmente" element={<CriarManualmente />} />
+          <Route path="/GerarComIA" element={<GerarcomIa />} />
+          <Route path="/VisualizarPerfil" element={<VisualizarPerfil />} />
+          <Route
+            path="/VisualizarBibliotecao/:id"
+            element={<VisualizarBiblioteca />}
+          />
+          <Route path="/GerarAtividades" element={<GerarAtividade />} />
+          <Route path="/VisualizarPlano/:id" element={<VisualizarPlano />} />
+          <Route
+            path="/VisualizarAtividade/:id"
+            element={<VisualizarAtividade />}
+          />
+        </Route>
       </Routes>
-  </BrowserRouter>
-  )
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

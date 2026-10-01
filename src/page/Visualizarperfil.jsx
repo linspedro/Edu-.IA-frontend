@@ -3,9 +3,11 @@ import MenuAzul from "../componentes/MenuAzul";
 import MenuLateral from "../componentes/menuLateral";
 import TextGraident from "../componentes/textGraidient";
 import { useNavigate } from "react-router";
+import { useAuth } from "../contexts/AuthContext";
 
 function VisualizarPerfil() {
   const navigate = useNavigate();
+  const {usuario} = useAuth()
 
   return (
     <section className="min-h-screen bg-[#F5F5F5]">
@@ -51,7 +53,7 @@ function VisualizarPerfil() {
 
             <div>
               <h2 className="text-xl md:text-3xl font-bold mb-1">
-                Professor
+                {usuario.nome}
               </h2>
               <p className="text-gray-500 text-sm md:text-base">
                 Professor

@@ -1,20 +1,62 @@
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
 import BtnAmarelo from "../componentes/BntAmarelo";
 import BtnAzul from "../componentes/bntAzul";
 import MenuAzul from "../componentes/MenuAzul";
 import TextGraident from "../componentes/textGraidient";
-import { useNavigate } from "react-router";
+import PlanejamentoApi from "../api/modelos/Planejamento";
+import PlanejamentoConteudoApi from "../api/modelos/PlanejamentoConteudo";
+
+
+function formatarData(dataISO) {
+
+  
+  if (!dataISO) return "Sem data";
+
+  // Se for formato AAAA-MM-DD
+  if (typeof dataISO === "string" && dataISO.includes("-")) {
+    const [ano, mes, dia] = dataISO.split("T")[0].split("-");
+    return `${dia}/${mes}/${ano}`;
+  }
+
+  const d = new Date(dataISO);
+  if (isNaN(d.getTime())) return "Data inválida";
+  return d.toLocaleDateString("pt-BR");
+}
 
 function VisualizarBiblioteca() {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [planejamento, setPlanejamento] = useState(null);
+  const [conteudos, setConteudos] = useState([]);
+
+  useEffect(() => {
+    async function carregar() {
+      const respostaPlanejamento = await PlanejamentoApi.buscar(id);
+      if (respostaPlanejamento.status === 200) {
+        setPlanejamento(respostaPlanejamento.data);
+      }
+
+      const respostaConteudos =
+        await PlanejamentoConteudoApi.listarPorPlanejamento(id);
+      if (respostaConteudos.status === 200) {
+        console.log("Conteúdos recebidos:", respostaConteudos.data); // <--- Adicione este log
+        setConteudos(respostaConteudos.data);
+      }
+    }
+    carregar();
+  }, [id]);
+
+  if (!planejamento) {
+    return <div className="p-8">Carregando...</div>;
+  }
 
   return (
     <section className="min-h-screen bg-white">
-      <MenuAzul Text={'Biblioteca'}/>
+      <MenuAzul Text={"Biblioteca"} />
 
-      {/* Conteúdo */}
       <div className="flex justify-center w-full py-6 md:py-10 px-4">
         <div className="bg-[#EAEAEA] w-full max-w-[900px] p-4 md:p-8 shadow-md rounded-lg">
-
           <div className="mb-4 md:mb-6">
             <BtnAzul
               children={"Voltar"}
@@ -22,34 +64,29 @@ function VisualizarBiblioteca() {
             />
           </div>
 
-          {/* Título */}
           <div className="mb-6 md:mb-8">
             <TextGraident
-              Texto="Gerar Plano de Aula com IA"
+              Texto={`${planejamento.materia} - ${planejamento.turma}`}
               TituloOuSubtitulo="titulo"
               tamanho={"22px md:28px"}
             />
-
-            <TextGraident
-              Texto="Preencha as informações básicas e deixe a IA criar um plano completo para você"
-              TituloOuSubtitulo="Subtitulo"
-              tamanho={"12px md:14px"}
-            />
           </div>
 
-          {/* TABELA 1 */}
           <div className="border border-gray-400 text-sm overflow-x-auto">
             <div className="text-center font-bold text-blue-600 py-4 md:py-5 border-b border-gray-400 text-xs md:text-base">
               PLANO DE AULA MENSAL | TURMA
             </div>
 
             {[
-              ["MÊS", "Maio"],
-              ["Organização:", "Trimestre"],
-              ["Componentes curriculares:", ""],
-              ["Habilidades:", "Aluno compreender a fotossíntese"],
-              ["Objetos de conhecimento:", "Projetor, Lupas e Folhas de planta"],
-              ["Número total de aulas:", "1 aula"],
+              ["Período", planejamento.periodo],
+              ["Organização:", planejamento.trimestre],
+              [
+                "Componentes curriculares:",
+                planejamento.componentes_curriculares,
+              ],
+              ["Habilidades:", planejamento.habilidades],
+              ["Objetivos:", planejamento.objetivo],
+              ["Número total de aulas:", planejamento.quantidade_de_aula],
             ].map((item, index) => (
               <div
                 key={index}
@@ -63,7 +100,6 @@ function VisualizarBiblioteca() {
             ))}
           </div>
 
-          {/* PLANOS E ESTRATÉGIAS */}
           <div className="mt-8 md:mt-12">
             <h2 className="text-center text-blue-600 font-bold text-xl md:text-2xl mb-4 md:mb-5">
               PLANOS E ESTRATÉGIAS
@@ -79,16 +115,26 @@ function VisualizarBiblioteca() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-[120px_1fr]">
-                <div className="p-2 bg-[#9BD8FF] border-r border-gray-300">
-                  20/5/2026
+              {conteudos.length === 0 ? (
+                <div className="p-4 text-center text-gray-500">
+                  Nenhum plano/estratégia cadastrado para este planejamento.
                 </div>
-                <div className="p-2 text-center">Química ecológica</div>
-              </div>
+              ) : (
+                conteudos.map((conteudo, index) => (
+                  <div
+                    key={conteudo.id_conteudo || index}
+                    className="grid grid-cols-2 md:grid-cols-[120px_1fr]"
+                  >
+                    <div className="p-2 bg-[#9BD8FF] border-r border-gray-300 text-center">
+                      {formatarData(conteudo.data)}
+                    </div>
+                    <div className="p-2 text-center">{conteudo.titulo}</div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
-          {/* AVALIAÇÃO */}
           <div className="mt-8 md:mt-10">
             <h2 className="text-center text-blue-600 font-bold text-xl md:text-2xl mb-4 md:mb-5">
               PROCESSO AVALIATIVO
@@ -97,62 +143,39 @@ function VisualizarBiblioteca() {
             <div className="border border-gray-400 text-xs md:text-sm overflow-x-auto">
               <div className="grid grid-cols-1 md:grid-cols-3 text-center border-b border-gray-300">
                 <div className="p-2 text-blue-700 border-b md:border-b-0 md:border-r border-gray-300">
-                  INSTRUMENTOS AVALIATIVOS
+                  PROVAS E TRABALHOS
                 </div>
                 <div className="p-2 text-blue-700 border-b md:border-b-0 md:border-r border-gray-300">
                   TIPO DE AVALIAÇÃO
                 </div>
-                <div className="p-2 text-blue-700">
-                  CRITÉRIOS
-                </div>
+                <div className="p-2 text-blue-700">CRITÉRIOS</div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3">
                 <div className="p-2 border-b md:border-b-0 md:border-r border-gray-300">
-                  Atividade para colocar em prática o que aprendeu
+                  {planejamento.provas_trabalhos}
                 </div>
                 <div className="p-2 border-b md:border-b-0 md:border-r border-gray-300">
-                  Divisão da turma em grupos para observar folhas com lupas
+                  {planejamento.formativa_somativa}
                 </div>
-                <div className="p-2">
-                  Identificar estruturas visíveis e relacionar com o que aprenderam
-                </div>
+                <div className="p-2">{planejamento.criterios}</div>
               </div>
             </div>
           </div>
 
-          {/* MATERIAIS */}
           <div className="mt-8 md:mt-10">
             <h2 className="text-center text-blue-600 font-bold text-xl md:text-2xl mb-4 md:mb-5">
               MATERIAIS E RECURSOS
             </h2>
 
-            <div className="border border-gray-400 text-sm overflow-x-auto">
-              <div className="grid grid-cols-2 md:grid-cols-[120px_1fr] border-b border-gray-300 text-center">
-                <div className="p-2 text-blue-700 border-r border-gray-300">
-                  DATA
-                </div>
-                <div className="p-2">
-                  Possíveis materiais necessários
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-[120px_1fr]">
-                <div className="p-2 bg-[#9BD8FF] border-r border-gray-300">
-                  14/05/2026
-                </div>
-                <div className="p-2">
-                  Projetor, lupas, folhas de planta e slides
-                </div>
-              </div>
+            <div className="border border-gray-400 text-sm overflow-x-auto p-2">
+              {planejamento.materiais_necessarios}
             </div>
           </div>
 
-          {/* BOTÃO */}
           <div className="mt-6 flex justify-center">
             <BtnAmarelo children={"Exportar em PDF"} />
           </div>
-
         </div>
       </div>
     </section>

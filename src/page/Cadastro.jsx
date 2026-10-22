@@ -1,219 +1,225 @@
+
+import { useState } from "react";
 import { HeaderLogin } from "../componentes/headerLogin";
 import EduaIA from "../assets/EduIA.png";
-import BtnAzul from "../componentes/bntAzul";
 import { useNavigate } from "react-router";
-import { useForm, } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { UserPlus, ShieldCheck } from "lucide-react";
+
 import usuariosAPI from "../api/modelos/usuario";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Cadastro() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [enviando, setEnviando] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
-    watch,
   } = useForm();
 
   const onSubmit = async (data) => {
+    setEnviando(true);
 
+    try {
+      const resposta = await usuariosAPI.cadastro(
+        data.Email,
+        data.Senha,
+        data.Nome
+      );
 
-    if (data.Senha.length < 6) {
-      setError("Senha", {
+      if (resposta.status !== 201) {
+        setError("root", {
+          type: "manual",
+          message:
+            resposta.data?.erro || "Não foi possível criar sua conta.",
+        });
+        return;
+      }
+
+      login(resposta.data.usuario);
+      navigate("/Principal");
+    } catch (error) {
+      setError("root", {
         type: "manual",
-        message: "Senha deve ter pelo menos 6 caracteres",
+        message:
+          error.response?.data?.erro ||
+          "Ocorreu um erro ao cadastrar. Tente novamente.",
       });
-
-      return;
+    } finally {
+      setEnviando(false);
     }
-
-    const resposta = await usuariosAPI.cadastro(
-      watch("Email"),
-      watch("Senha"),
-      watch("Nome"),
-    );
-
-    if (resposta.status !== 201) {
-      setError("Senha", {
-        type: "manual",
-        message: resposta.data.erro,
-      });
-    }
-
-    if(resposta.status === 201) {
-      login(resposta.data.usuario)
-      navigate("/Principal")
-    }
-
   };
 
+  const campoClass =
+    "h-12 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100";
+
   return (
-    <div className="w-full min-h-screen bg-[#123d66] flex flex-col font-[Poppins]">
-      {/* MENU */}
+    <div className="min-h-screen bg-[#F8FAFC] font-[Poppins]">
       <HeaderLogin />
 
-      {/* CONTEÚDO */}
-      <main className="flex-1 flex items-center justify-center p-4 pt-24">
-        <div
-          className="
-            w-full
-            max-w-md
-            bg-white
-            rounded-xl
-            shadow-lg
-            flex
-            flex-col
-            items-center
-            pt-8
-            px-4
-            sm:px-6
-            pb-8
-          "
-        >
+      <main className="flex min-h-screen items-center justify-center px-4 pb-8 pt-24">
+        <section className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-9">
           {/* LOGO */}
-          <img src={EduaIA} alt="Logo" className="w-20 sm:w-24 md:w-28 mb-3" />
+          <div className="mb-5 flex justify-center">
+            <img
+              src={EduaIA}
+              alt="Logo Edu+.IA"
+              className="h-auto w-24 sm:w-28"
+            />
+          </div>
 
           {/* TÍTULO */}
-          <h2 className="text-[#2499F9] text-2xl md:text-3xl font-semibold mb-2">
-            Cadastro
-          </h2>
+          <div className="mb-7 text-center">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+              Crie sua conta
+            </h1>
 
-          {/* TEXTO */}
-          <p
-            className="
-              text-sm
-              sm:text-base
-              text-center
-              mb-5
-              bg-gradient-to-r
-              from-[#DAE3FF]
-              to-[#2499F9]
-              bg-clip-text
-              text-transparent
-            "
-          >
-            Crie sua conta para continuar
-          </p>
+            <p className="mt-2 text-sm leading-6 text-gray-500 sm:text-base">
+              Comece a organizar seus planejamentos com o Edu+.IA.
+            </p>
+          </div>
 
-          {/* FORM */}
+          {/* FORMULÁRIO */}
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="w-full flex flex-col gap-2"
+            className="flex flex-col gap-5"
           >
-            {/* Nome */}
-            <div className="w-full flex flex-col">
+            {/* NOME */}
+            <div>
+              <label
+                htmlFor="Nome"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Nome completo
+              </label>
+
               <input
+                id="Nome"
                 type="text"
-                placeholder="Nome"
-                className="
-                  w-full
-                  h-11
-                  bg-[#F5F5F5]
-                  border
-                  border-[#d1d5db]
-                  rounded-lg
-                  px-4
-                  text-base
-                  outline-none
-                  focus:placeholder:opacity-0
-                  transition
-                "
+                autoComplete="name"
+                placeholder="Digite seu nome"
+                className={campoClass}
                 {...register("Nome", {
-                  required: "Nome é obrigatório",
+                  required: "O nome é obrigatório.",
+                  minLength: {
+                    value: 2,
+                    message: "Digite pelo menos 2 caracteres.",
+                  },
                 })}
               />
 
               {errors.Nome && (
-                <span className="text-red-500 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-600">
                   {errors.Nome.message}
-                </span>
+                </p>
               )}
             </div>
 
-            {/* Email */}
-            <div className="w-full flex flex-col">
+            {/* E-MAIL */}
+            <div>
+              <label
+                htmlFor="Email"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                E-mail
+              </label>
+
               <input
+                id="Email"
                 type="email"
-                placeholder="Email"
-                className="
-                  w-full
-                  h-11
-                  bg-[#F5F5F5]
-                  border
-                  border-[#d1d5db]
-                  rounded-lg
-                  px-4
-                  text-base
-                  outline-none
-                  focus:placeholder:opacity-0
-                  transition
-                "
+                autoComplete="email"
+                placeholder="Digite seu e-mail"
+                className={campoClass}
                 {...register("Email", {
-                  required: "Email é obrigatório",
+                  required: "O e-mail é obrigatório.",
                 })}
               />
 
               {errors.Email && (
-                <span className="text-red-500 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-600">
                   {errors.Email.message}
-                </span>
+                </p>
               )}
             </div>
 
-            {/* Senha */}
-            <div className="w-full flex flex-col">
+            {/* SENHA */}
+            <div>
+              <label
+                htmlFor="Senha"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Senha
+              </label>
+
               <input
+                id="Senha"
                 type="password"
-                placeholder="Senha"
-                className="
-                  w-full
-                  h-11
-                  bg-[#F5F5F5]
-                  border
-                  border-[#d1d5db]
-                  rounded-lg
-                  px-4
-                  text-base
-                  outline-none
-                  focus:placeholder:opacity-0
-                  transition
-                "
+                autoComplete="new-password"
+                placeholder="Crie uma senha"
+                className={campoClass}
                 {...register("Senha", {
-                  required: "Senha é obrigatória",
+                  required: "A senha é obrigatória.",
+                  minLength: {
+                    value: 6,
+                    message: "A senha deve ter pelo menos 6 caracteres.",
+                  },
                 })}
               />
 
               {errors.Senha && (
-                <span className="text-red-500 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-600">
                   {errors.Senha.message}
-                </span>
+                </p>
               )}
+
+              <p className="mt-2 text-xs text-gray-400">
+                Utilize pelo menos 6 caracteres.
+              </p>
             </div>
 
-            {/* Link Login */}
-            <button
-              type="button"
-              className="
-                text-[#3491ff]
-                text-sm
-                mt-2
-                mb-6
-                hover:underline
-                hover:text-[#b7d4fd]
-                transition
-              "
-              onClick={() => navigate("/Login")}
-            >
-              Já possui conta?
-            </button>
+            {/* ERRO DA API */}
+            {errors.root && (
+              <div
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              >
+                {errors.root.message}
+              </div>
+            )}
 
-            {/* Botão */}
-            <BtnAzul children="Entrar" tamanho="w-full" type="submit" />
+            {/* LINK LOGIN */}
+            <p className="text-center text-sm text-gray-600">
+              Já possui uma conta?{" "}
+              <button
+                type="button"
+                className="font-semibold text-blue-700 hover:text-blue-800 hover:underline"
+                onClick={() => navigate("/Login")}
+              >
+                Entrar
+              </button>
+            </p>
+
+            {/* BOTÃO */}
+            <button
+              type="submit"
+              disabled={enviando}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <UserPlus size={18} />
+              {enviando ? "Criando conta..." : "Criar minha conta"}
+            </button>
           </form>
-        </div>
+
+          {/* RODAPÉ */}
+          <div className="mt-6 flex items-center justify-center gap-2 border-t border-gray-100 pt-5 text-xs text-gray-400">
+            <ShieldCheck size={15} />
+            Crie sua conta para acessar o Edu+.IA
+          </div>
+        </section>
       </main>
     </div>
   );

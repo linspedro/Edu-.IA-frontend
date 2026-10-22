@@ -1,19 +1,21 @@
+
 export default function Containercomofunciona({ children }) {
   return (
     <div
       className="
-        bg-[#225C8C]
-        border-2 sm:border-4
-        border-yellow-400
-        p-4 sm:p-6 md:p-8
         w-full
-        max-w-[800px]
+        max-w-6xl
         mx-auto
+        rounded-2xl
+        border border-gray-200
+        bg-white
+        p-5
+        sm:p-8
+        md:p-10
         text-center
         flex flex-col
         items-center
-        gap-2 sm:gap-4
-        rounded-xl
+        gap-4
       "
     >
       {children}

@@ -1,6 +1,14 @@
 import http from "../http";
 
 const AulaApi = {
+  gerarComIA: async (dados) => {
+    try {
+      const resposta = await http.post("/aulas/gerar", dados);
+      return { data: resposta.data, status: resposta.status };
+    } catch (error) {
+      return { data: error.response.data, status: error.response.status };
+    }
+  },
   listar: async () => {
     try {
       const resposta = await http.get("/aulas");
@@ -18,7 +26,24 @@ const AulaApi = {
     }
   },
 
+  listarPorUsuario: async (id_usuario) => {
+    try {
+      const resposta = await http.get(`/aulas/usuario/${id_usuario}`);
+      return { data: resposta.data, status: resposta.status };
+    } catch (error) {
+      return { data: error.response.data, status: error.response.status };
+    }
+  },
 
+  // ADICIONE ESTA FUNÇÃO ABAIXO:
+  deletar: async (id) => {
+    try {
+      const resposta = await http.delete(`/aulas/${id}`);
+      return { data: resposta.data, status: resposta.status };
+    } catch (error) {
+      return { data: error.response.data, status: error.response.status };
+    }
+  },
 };
 
 export default AulaApi;

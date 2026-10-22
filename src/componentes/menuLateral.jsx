@@ -1,51 +1,106 @@
-import { Home, BookOpen, Book, User, X, Menu } from "lucide-react";
+
+import {
+  Home,
+  BookOpen,
+  Book,
+  UserRound,
+  X,
+  Menu,
+  LogOut,
+  ChevronRight,
+  GraduationCap,
+  UserRoundPen,
+} from "lucide-react";
+
 import { useState } from "react";
-import BntAzul from "./bntAzul";
+import { useLocation, useNavigate } from "react-router";
+
 import Edu from "../assets/Edu.png";
-import { useNavigate } from "react-router";
-import BtnAmarelo from "./BntAmarelo";
 import { useAuth } from "../contexts/AuthContext";
 
+const itensMenu = [
+  {
+    nome: "Central",
+    descricao: "Visão geral",
+    caminho: "/Principal",
+    icone: Home,
+  },
+  {
+    nome: "Planejar",
+    descricao: "Planos de aula",
+    caminho: "/PlanejarPrincipal",
+    icone: BookOpen,
+  },
+  {
+    nome: "Atividades",
+    descricao: "Criar atividades",
+    caminho: "/GerarAtividades",
+    icone: GraduationCap,
+  },
+  {
+    nome: "Biblioteca",
+    descricao: "Seus materiais",
+    caminho: "/BibliotecaPrincipal",
+    icone: Book,
+  },
+];
+
 export default function MenuLateral() {
-  const {usuario} = useAuth()
+  const { usuario, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [abrirPerfil, setAbrirPerfil] = useState(false);
   const [menuMobileAberto, setMenuMobileAberto] = useState(false);
+  const [abrirPerfil, setAbrirPerfil] = useState(false);
 
-  const {logout} = useAuth()
+  const nomeUsuario = usuario?.nome || "Usuário";
+  const inicial = nomeUsuario.charAt(0).toUpperCase();
+
+  function navegarPara(caminho) {
+    navigate(caminho);
+    setMenuMobileAberto(false);
+    setAbrirPerfil(false);
+  }
+
+  function sairDaConta() {
+    logout();
+    setMenuMobileAberto(false);
+    setAbrirPerfil(false);
+    navigate("/");
+  }
 
   return (
     <>
-      {/* Botão Menu Mobile */}
+      {/* Botão para abrir no celular */}
       <button
-        className="fixed top-4 left-4 z-[100] md:hidden bg-[#0F4C81] p-2 rounded-lg text-white"
+        type="button"
+        aria-label="Abrir menu"
         onClick={() => setMenuMobileAberto(true)}
+        className="nao-imprimir fixed left-4 top-4 z-[100] flex h-11 w-11 items-center justify-center rounded-xl bg-[#0F4C81] text-white shadow-lg transition hover:bg-[#1764A3] active:scale-95 md:hidden"
       >
-        <Menu size={24} />
+        <Menu size={23} />
       </button>
 
-      {/* Overlay Mobile */}
+      {/* Fundo do menu mobile */}
       {menuMobileAberto && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+        <button
+          type="button"
+          aria-label="Fechar menu"
+          className="nao-imprimir fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm md:hidden"
           onClick={() => setMenuMobileAberto(false)}
         />
       )}
 
-      {/* Menu */}
+      {/* Barra lateral */}
       <aside
         className={`
-          fixed md:sticky
-          top-0 left-0
-          w-64 md:w-56
-          h-screen
-          bg-[#0F4C81]
-          text-white
-          flex flex-col
-          justify-between
-          z-50
-          transition-transform duration-300
+          nao-imprimir fixed left-0 top-0 z-50
+          flex h-screen w-[270px] flex-col
+          border-r border-white/10
+          bg-gradient-to-b from-[#103F6B] via-[#0F4C81] to-[#0A3154]
+          text-white shadow-2xl
+          transition-transform duration-300 ease-in-out
+          md:sticky md:w-60 md:shrink-0 md:shadow-none
           ${
             menuMobileAberto
               ? "translate-x-0"
@@ -53,126 +108,191 @@ export default function MenuLateral() {
           }
         `}
       >
-        {/* Fechar Mobile */}
-        <div className="flex justify-end p-4 md:hidden">
-          <X
-            size={24}
-            className="cursor-pointer"
+        {/* Logo e cabeçalho */}
+        <div className="relative border-b border-white/10 px-5 pb-6 pt-7">
+          <button
+            type="button"
+            aria-label="Fechar menu"
             onClick={() => setMenuMobileAberto(false)}
-          />
-        </div>
+            className="absolute right-4 top-4 rounded-lg p-2 text-blue-100 transition hover:bg-white/10 md:hidden"
+          >
+            <X size={21} />
+          </button>
 
-        {/* Topo */}
-        <div className="p-4 text-center">
-          <img
-            src={Edu}
-            alt="Edu+.IA"
-            className="w-32 md:w-40 mx-auto"
-          />
+          <button
+            type="button"
+            onClick={() => navegarPara("/Principal")}
+            className="mx-auto block rounded-xl transition hover:scale-[1.02]"
+          >
+            <img
+              src={Edu}
+              alt="Edu+.IA"
+              className="mx-auto h-auto w-36 object-contain"
+            />
+          </button>
+
+          <div className="mt-5 flex items-center justify-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-100/80">
+              Espaço do professor
+            </p>
+          </div>
         </div>
 
         {/* Navegação */}
-        <div className="flex flex-col gap-6 px-4 flex-1">
-          <div className="flex items-center gap-3">
-            <Home size={20} />
-            <BntAzul
-              children="Central"
-              tamanho="150px"
-              onClick={() => {
-                navigate("/Principal");
-                setMenuMobileAberto(false);
-              }}
-            />
+       <nav className="menu-lateral-scroll flex-1 space-y-2 overflow-y-auto px-4 py-7">
+          <p className="mb-4 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200/60">
+            Menu principal
+          </p>
+
+          {itensMenu.map((item) => {
+            const Icone = item.icone;
+            const ativo =
+              location.pathname === item.caminho ||
+              (item.caminho === "/PlanejarPrincipal" &&
+                location.pathname.startsWith("/Planejar")) ||
+              (item.caminho === "/GerarAtividades" &&
+                location.pathname.startsWith("/GerarAtividades")) ||
+              (item.caminho === "/BibliotecaPrincipal" &&
+                location.pathname.startsWith("/Visualizar"));
+
+            return (
+              <button
+                key={item.caminho}
+                type="button"
+                onClick={() => navegarPara(item.caminho)}
+                className={`
+                  group relative flex w-full items-center gap-3
+                  rounded-xl px-3 py-3.5 text-left
+                  transition-all duration-200
+                  ${
+                    ativo
+                      ? "bg-white text-[#0F4C81] shadow-md shadow-slate-950/10"
+                      : "text-blue-50/85 hover:bg-white/10 hover:text-white"
+                  }
+                `}
+              >
+                {ativo && (
+                  <span className="absolute bottom-3 left-0 top-3 w-1 rounded-r-full bg-amber-400" />
+                )}
+
+                <span
+                  className={`
+                    flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
+                    transition-colors
+                    ${
+                      ativo
+                        ? "bg-[#E9F3FC] text-[#0F4C81]"
+                        : "bg-white/10 text-blue-100 group-hover:bg-white/15"
+                    }
+                  `}
+                >
+                  <Icone size={20} strokeWidth={2} />
+                </span>
+
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold">
+                    {item.nome}
+                  </span>
+                  <span
+                    className={`mt-0.5 block text-[11px] ${
+                      ativo ? "text-slate-500" : "text-blue-100/60"
+                    }`}
+                  >
+                    {item.descricao}
+                  </span>
+                </span>
+
+                <ChevronRight
+                  size={16}
+                  className={`shrink-0 transition-transform ${
+                    ativo
+                      ? "text-[#0F4C81]"
+                      : "text-blue-100/40 group-hover:translate-x-0.5"
+                  }`}
+                />
+              </button>
+            );
+          })}
+
+          {/* Cartão informativo */}
+          <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-amber-300/15 text-amber-300">
+              <GraduationCap size={20} />
+            </div>
+
+            <p className="text-sm font-semibold text-white">
+              Ensinar com propósito
+            </p>
+
+            <p className="mt-1.5 text-xs leading-5 text-blue-100/65">
+              Organize suas ideias e simplifique seu planejamento docente.
+            </p>
           </div>
+        </nav>
 
-          <div className="flex items-center gap-3">
-            <BookOpen size={20} />
-            <BntAzul
-              children="Planejar"
-              tamanho="150px"
-              onClick={() => {
-                navigate("/PlanejarPrincipal");
-                setMenuMobileAberto(false);
-              }}
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Home size={20} />
-            <BntAzul
-              children="Atividades"
-              tamanho="150px"
-              onClick={() => {
-                navigate("/GerarAtividades");
-                setMenuMobileAberto(false);
-              }}
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Book size={20} />
-            <BntAzul
-              children="Biblioteca"
-              tamanho="150px"
-              onClick={() => {
-                navigate("/BibliotecaPrincipal");
-                setMenuMobileAberto(false);
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Perfil */}
-        <div className="p-4 text-center relative">
-          <div
-            className="flex justify-center mb-2 cursor-pointer hover:opacity-75"
-            onClick={() => setAbrirPerfil(!abrirPerfil)}
-          >
-            <User size={25} />
-          </div>
-
-          <span className="text-sm">Meu Perfil</span>
-
+        {/* Área do perfil */}
+        <div className="relative border-t border-white/10 p-4">
           {abrirPerfil && (
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[90%] md:w-64 bg-[#1E4F8A] rounded-2xl shadow-2xl p-4 z-50">
-              <div className="flex justify-end">
-                <X
-                  size={18}
-                  className="cursor-pointer"
-                  onClick={() => setAbrirPerfil(false)}
-                />
-              </div>
-
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-blue-400 flex items-center justify-center">
-                  {usuario.nome[0]}
+            <div className="absolute bottom-[calc(100%-8px)] left-3 right-3 z-[60] overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 text-slate-800 shadow-2xl">
+              <div className="flex items-center gap-3 border-b border-slate-100 px-3 py-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E7F1FC] font-bold text-[#0F4C81]">
+                  {inicial}
                 </div>
 
-                <div>
-                  <h2 className="text-lg md:text-xl font-bold">
-                    {usuario.nome}
-                  </h2>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold">{nomeUsuario}</p>
+                  <p className="text-xs text-slate-500">Sua conta Edu+.IA</p>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <BtnAmarelo
-                  tamanho="w-full"
-                  children="Visualizar perfil"
-                  onClick={() => navigate("/VisualizarPerfil")}
-                />
+              <button
+                type="button"
+                onClick={() => navegarPara("/VisualizarPerfil")}
+                className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-blue-50 hover:text-[#0F4C81]"
+              >
+                <UserRoundPen size={18} />
+                Visualizar perfil
+              </button>
 
-                <BntAzul
-                  tamanho="w-full"
-                  children="Sair da conta"
-                  onClick={() => {
-                    logout()
-                    navigate("/")
-                  }}
-                />
-              </div>
+              <button
+                type="button"
+                onClick={sairDaConta}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
+              >
+                <LogOut size={18} />
+                Sair da conta
+              </button>
             </div>
           )}
+
+          <button
+            type="button"
+            aria-expanded={abrirPerfil}
+            onClick={() => setAbrirPerfil((aberto) => !aberto)}
+            className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
+              abrirPerfil
+                ? "border-white/20 bg-white/15"
+                : "border-transparent hover:border-white/10 hover:bg-white/[0.08]"
+            }`}
+          >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-amber-300/80 bg-[#1A639C] text-lg font-bold text-white shadow-inner">
+              {inicial}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold">{nomeUsuario}</p>
+              <p className="mt-0.5 text-xs text-blue-100/65">
+                Meu perfil
+              </p>
+            </div>
+
+            <UserRound size={17} className="shrink-0 text-blue-100/70" />
+          </button>
+
+          <p className="mt-4 text-center text-[10px] tracking-wide text-blue-100/40">
+            Edu+.IA · Planejamento inteligente
+          </p>
         </div>
       </aside>
     </>

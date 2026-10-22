@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router";
+
 import Blibioteca from "./page/Blibioteca";
 import G_Plano from "./page/G_Plano";
 import C_Plano from "./page/C_Plano";
@@ -14,17 +15,14 @@ import VisualizarBiblioteca from "./page/visualizarBlibioteca";
 import GerarAtividade from "./page/GerarAtividades";
 import VisualizarPlano from "./page/VisualizarPlano";
 import VisualizarAtividade from "./page/VisualizarAtividade";
-import { BrowserRouter, Routes, Route } from "react-router";
 
+import { AuthProvider } from "./contexts/AuthContext";
 import { RotaProtegida } from "./componentes/RotaProtegida";
 
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    //
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Blibioteca />} />

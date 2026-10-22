@@ -1,17 +1,22 @@
+
 import { NavLink } from "react-router";
 
 export function HeaderLogin() {
   return (
-    <header className="fixed top-0 left-0 w-full h-16 sm:h-20 bg-gradient-to-r from-[#2876B5] to-[#2B5D9E] text-white z-50">
-      <div className="max-w-[1200px] mx-auto px-4 h-full flex justify-between items-center">
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-semibold">
-          Edu+.IA
-        </h1>
-
+    <header className="fixed left-0 top-0 z-50 h-16 w-full border-b border-gray-200 bg-white sm:h-20">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-8">
         <NavLink
-          className="text-base sm:text-xl md:text-2xl hover:opacity-70 transition"
           to="/"
           end
+          className="text-2xl font-bold tracking-tight text-blue-700 transition hover:text-blue-800 sm:text-3xl"
+        >
+          Edu+.IA
+        </NavLink>
+
+        <NavLink
+          to="/"
+          end
+          className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-blue-50 hover:text-blue-700 sm:text-base"
         >
           Voltar
         </NavLink>

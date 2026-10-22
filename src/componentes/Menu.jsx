@@ -1,91 +1,61 @@
+
 import { NavLink, useNavigate } from "react-router";
 
-export default function Navbar({ font = "Poppins" }) {
+export default function Navbar() {
   const navigate = useNavigate();
 
+  const linkClass = ({ isActive }) =>
+    `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+      isActive
+        ? "bg-blue-50 text-blue-700"
+        : "text-gray-600 hover:bg-gray-50 hover:text-blue-700"
+    }`;
+
   return (
-    <header className="bg-white border-b px-4 md:px-6 py-3">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-4 sm:px-8 md:flex-row">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          aria-label="Ir para a página inicial"
+          className="shrink-0 text-2xl font-bold tracking-tight text-blue-700 transition hover:text-blue-800 sm:text-3xl"
+        >
+          Edu+.IA
+        </button>
 
-        {/* Logo */}
-        <div>
-          <h2
-            className="
-              text-2xl sm:text-3xl md:text-4xl
-              font-bold
-              bg-gradient-to-b
-              from-blue-600
-              to-white
-              bg-clip-text
-              text-transparent
-              cursor-pointer
-              text-center md:text-left
-            "
-            onClick={() => navigate("/")}
-          >
-            Edu+.IA
-          </h2>
-
-          <hr className="w-24 sm:w-36 mt-1.5 text-blue-400 mx-auto md:mx-0" />
-        </div>
-
-        {/* Menu */}
-        <nav>
-          <ul className="flex flex-col sm:flex-row gap-3 sm:gap-4 text-center">
+        <nav aria-label="Navegação principal">
+          <ul className="flex flex-wrap items-center justify-center gap-2">
             <li>
-              <NavLink
-                style={{ fontFamily: font }}
-                className="hover:opacity-70"
-                to="/Gplano"
-                end
-              >
-                C.Aulas
+              <NavLink className={linkClass} to="/Gplano">
+                Gerar com IA
               </NavLink>
             </li>
 
             <li>
-              <NavLink
-                style={{ fontFamily: font }}
-                className="hover:opacity-70"
-                to="/Cplano"
-                end
-              >
-                C.Planejamento
+              <NavLink className={linkClass} to="/Cplano">
+                Criar manualmente
               </NavLink>
             </li>
           </ul>
         </nav>
 
-        {/* Botões */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full md:w-auto">
+        <div className="flex w-full items-center gap-3 sm:w-auto">
           <button
-            className="
-              bg-amber-300
-              text-white
-              px-4 py-2
-              rounded-lg
-              hover:bg-blue-700
-              transition
-              w-full sm:w-auto
-              cursor-pointer
-            "
-            onClick={() => navigate("/Cadastro")}
-          >
-            Começar Agora
-          </button>
-
-          <button
-            className="
-              text-base sm:text-xl
-              hover:opacity-50
-              cursor-pointer
-            "
+            type="button"
             onClick={() => navigate("/Login")}
+            className="flex-1 rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 hover:text-blue-700 sm:flex-none"
           >
             Entrar
           </button>
-        </div>
 
+          <button
+            type="button"
+            onClick={() => navigate("/Cadastro")}
+            className="flex-1 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:flex-none"
+          >
+            Começar agora
+          </button>
+        </div>
       </div>
     </header>
   );

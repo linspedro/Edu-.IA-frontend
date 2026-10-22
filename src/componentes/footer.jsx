@@ -1,47 +1,23 @@
-export default function Footer({
-  companyName = "Minha Empresa",
 
-  bottomText = "Todos os direitos reservados."
+export default function Footer({
+  companyName = "Edu+.IA",
+  bottomText = "Todos os direitos reservados.",
 }) {
   return (
-    <footer className="bg-white text-black py-8 mt-10">
-      <div className="max-w-6xl mx-auto px-4">
-
-        {/* Topo */}
-        <div className="
-          flex flex-col md:flex-row
-          justify-between items-center
-          gap-6
-          border-b border-gray-300
-          pb-6
-        ">
-          <h2
-            className="
-              text-2xl sm:text-3xl md:text-4xl
-              font-bold
-              bg-gradient-to-b from-blue-600 to-white
-              bg-clip-text
-              text-transparent
-              text-center
-            "
-          >
+    <footer className="mt-10 border-t border-gray-200 bg-white text-gray-600">
+      <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <h2 className="text-2xl font-bold tracking-tight text-blue-700">
             {companyName}
+            <span className="text-blue-400">.</span>
           </h2>
 
-          <nav
-            className="
-              flex flex-col sm:flex-row
-              items-center
-              gap-3 sm:gap-6
-              text-center
-            "
-          >
-
-          </nav>
+          <p className="text-center text-sm leading-6 text-gray-500 sm:text-right">
+            Apoio inteligente para o planejamento docente.
+          </p>
         </div>
 
-        {/* Parte inferior */}
-        <div className="text-center mt-6 text-xs sm:text-sm text-gray-400">
+        <div className="mt-6 border-t border-gray-100 pt-5 text-center text-xs text-gray-400 sm:text-sm">
           {bottomText}
         </div>
       </div>

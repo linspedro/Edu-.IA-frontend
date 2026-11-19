@@ -1,6 +1,14 @@
 import http from "../http";
 
 const PlanejamentoApi = {
+    atualizar: async (id, dados) => {
+    try {
+      const resposta = await http.put(`/Planejamento/${id}`, dados);
+      return { data: resposta.data, status: resposta.status };
+    } catch (error) {
+      return { data: error.response.data, status: error.response.status };
+    }
+  },
   criar: async (planejamento) => {
     try {
       const resposta = await http.post(

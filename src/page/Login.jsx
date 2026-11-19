@@ -1,7 +1,6 @@
 
 import Input from "../componentes/input";
 import { HeaderLogin } from "../componentes/headerLogin";
-import BntAmarelo from "../componentes/BntAmarelo";
 import EduaIA from "../assets/EduIA.png";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
@@ -22,16 +21,14 @@ function Login() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    if (data.Senha.length < 6) {
-      setError("Senha", {
-        type: "manual",
-        message: "A senha deve ter pelo menos 6 caracteres.",
-      });
-      return;
-    }
-
     try {
-      const resposta = await usuariosAPI.login(data.Email, data.Senha);
+      const resposta = await usuariosAPI.login(
+        data.Email,
+        data.Senha
+      );
+
+      console.log("RESPOSTA COMPLETA DO BACKEND:", resposta.data);
+      console.log("USUÁRIO RETORNADO:", resposta.data?.usuario);
 
       if (resposta.status !== 200) {
         setError("root", {
@@ -41,9 +38,39 @@ function Login() {
         return;
       }
 
-      login(resposta.data.usuario);
+      const dadosUsuario = resposta.data?.usuario;
+
+      if (!dadosUsuario) {
+        console.error("Backend não retornou resposta.data.usuario");
+
+        setError("root", {
+          type: "manual",
+          message: "O servidor não retornou os dados do usuário.",
+        });
+        return;
+      }
+
+      const sucesso = login(dadosUsuario);
+
+      if (!sucesso) {
+        console.error("Não foi possível identificar o ID:", dadosUsuario);
+
+        setError("root", {
+          type: "manual",
+          message: "Usuário autenticado, mas o ID não foi encontrado.",
+        });
+        return;
+      }
+
+      console.log(
+        "USUÁRIO SALVO NO LOCALSTORAGE:",
+        localStorage.getItem("usuario")
+      );
+
       navigation("/Principal");
     } catch (error) {
+      console.error("ERRO NO LOGIN:", error);
+
       setError("root", {
         type: "manual",
         message:
@@ -59,7 +86,7 @@ function Login() {
 
       <main className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-md items-center justify-center">
         <section className="w-full rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-9">
-          {/* LOGO */}
+
           <div className="mb-6 flex justify-center">
             <img
               src={EduaIA}
@@ -68,7 +95,6 @@ function Login() {
             />
           </div>
 
-          {/* TÍTULO */}
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
               Bem-vindo ao Edu+.IA
@@ -79,7 +105,6 @@ function Login() {
             </p>
           </div>
 
-          {/* FORMULÁRIO */}
           <form
             className="flex flex-col gap-5"
             onSubmit={handleSubmit(onSubmit)}
@@ -95,6 +120,7 @@ function Login() {
               <Input
                 id="Email"
                 type="email"
+                autoComplete="username"
                 placeholder="Digite seu e-mail"
                 largura="100%"
                 {...register("Email", {
@@ -120,6 +146,7 @@ function Login() {
               <Input
                 id="Senha"
                 type="password"
+                autoComplete="current-password"
                 placeholder="Digite sua senha"
                 largura="100%"
                 {...register("Senha", {
@@ -138,7 +165,6 @@ function Login() {
               )}
             </div>
 
-            {/* ERRO DA API */}
             {errors.root && (
               <div
                 role="alert"
@@ -148,7 +174,6 @@ function Login() {
               </div>
             )}
 
-            {/* CADASTRO */}
             <p className="text-center text-sm text-gray-600">
               Ainda não tem conta?{" "}
               <button
@@ -160,7 +185,6 @@ function Login() {
               </button>
             </p>
 
-            {/* BOTÃO */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -171,7 +195,6 @@ function Login() {
             </button>
           </form>
 
-          {/* RODAPÉ DO CARD */}
           <div className="mt-6 flex items-center justify-center gap-2 border-t border-gray-100 pt-5 text-xs text-gray-400">
             <ShieldCheck size={15} />
             Acesse sua conta Edu+.IA

@@ -25,7 +25,6 @@ const AulaApi = {
       return { data: error.response.data, status: error.response.status };
     }
   },
-
   listarPorUsuario: async (id_usuario) => {
     try {
       const resposta = await http.get(`/aulas/usuario/${id_usuario}`);
@@ -34,8 +33,14 @@ const AulaApi = {
       return { data: error.response.data, status: error.response.status };
     }
   },
-
-  // ADICIONE ESTA FUNÇÃO ABAIXO:
+  atualizar: async (id, dados) => {
+    try {
+      const resposta = await http.put(`/aulas/${id}`, dados);
+      return { data: resposta.data, status: resposta.status };
+    } catch (error) {
+      return { data: error.response.data, status: error.response.status };
+    }
+  },
   deletar: async (id) => {
     try {
       const resposta = await http.delete(`/aulas/${id}`);

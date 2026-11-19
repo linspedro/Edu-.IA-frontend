@@ -1,6 +1,14 @@
-
 import { useState } from "react";
-import { Sparkles, BookOpen, Clock, Target, FileText, Lightbulb, CheckCircle2, ArrowLeft } from "lucide-react";
+import {
+  Sparkles,
+  BookOpen,
+  Clock,
+  Target,
+  FileText,
+  Lightbulb,
+  CheckCircle2,
+  ArrowLeft,
+} from "lucide-react";
 import BtnAzul from "../componentes/bntAzul";
 import Input from "../componentes/input";
 import MenuAzul from "../componentes/MenuAzul";
@@ -13,6 +21,9 @@ import AtividadeApi from "../api/modelos/Atividade";
 function GerarAtividade() {
   const navigate = useNavigate();
   const { usuario } = useAuth();
+
+  // Identificação do usuário logado
+  const idUsuario = usuario?.id_usuario ?? usuario?.id;
 
   const [opcoes, setOpcoes] = useState([]);
   const [opcaoSelecionada, setOpcaoSelecionada] = useState(null);
@@ -28,11 +39,13 @@ function GerarAtividade() {
     formState: { errors },
   } = useForm();
 
+  // GERAR ATIVIDADES COM IA
   const onSubmit = async (data) => {
     if (gerando || salvando) return;
 
-    if (!usuario?.id) {
+    if (!idUsuario) {
       setErro("Não foi possível identificar o usuário logado.");
+      console.log("Usuário recebido pelo AuthContext:", usuario);
       return;
     }
 
@@ -45,7 +58,7 @@ function GerarAtividade() {
 
     try {
       const resposta = await AtividadeApi.gerarComIA({
-        id_usuario: usuario.id,
+        id_usuario: idUsuario,
         titulo: data.titulo,
         disciplina: data.disciplina,
         turma: data.turma,
@@ -69,6 +82,8 @@ function GerarAtividade() {
         );
       }
     } catch (error) {
+      console.error("Erro ao gerar atividades:", error);
+
       setErro(
         error.response?.data?.erro ||
           "Não foi possível conectar ao servidor."
@@ -78,13 +93,21 @@ function GerarAtividade() {
     }
   };
 
+  // SALVAR SOMENTE A ATIVIDADE ESCOLHIDA
   const salvarEscolhida = async () => {
+    if (salvando) return;
+
     if (
       opcaoSelecionada === null ||
-      !dadosFormulario ||
-      !usuario?.id ||
-      salvando
+      !dadosFormulario
     ) {
+      setErro("Selecione uma atividade antes de continuar.");
+      return;
+    }
+
+    if (!idUsuario) {
+      setErro("Não foi possível identificar o usuário logado.");
+      console.log("Usuário recebido pelo AuthContext:", usuario);
       return;
     }
 
@@ -96,7 +119,7 @@ function GerarAtividade() {
 
     try {
       const resposta = await AtividadeApi.criar({
-        id_usuario: usuario.id,
+        id_usuario: idUsuario,
         titulo: dadosFormulario.titulo,
         materia: dadosFormulario.disciplina,
         turma: dadosFormulario.turma,
@@ -123,10 +146,13 @@ function GerarAtividade() {
         setOpcaoSelecionada(null);
       } else {
         setErro(
-          resposta.data?.erro || "Não foi possível salvar a atividade."
+          resposta.data?.erro ||
+            "Não foi possível salvar a atividade."
         );
       }
     } catch (error) {
+      console.error("Erro ao salvar atividade:", error);
+
       setErro(
         error.response?.data?.erro ||
           "Não foi possível salvar a atividade escolhida."
@@ -144,8 +170,9 @@ function GerarAtividade() {
         <MenuLateral />
 
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-9">
-          {/* CABEÇALHO */}
           <div className="mx-auto max-w-6xl">
+
+            {/* CABEÇALHO */}
             <button
               type="button"
               onClick={() => navigate("/Principal")}
@@ -171,9 +198,8 @@ function GerarAtividade() {
                   </h1>
 
                   <p className="mt-3 max-w-xl leading-7 text-blue-100">
-                    Informe os detalhes da sua aula e receba três sugestões
-                    de atividades para escolher a que melhor combina com sua
-                    turma.
+                    Informe os detalhes da sua aula e receba três sugestões de
+                    atividades para escolher a que melhor combina com sua turma.
                   </p>
                 </div>
 
@@ -184,11 +210,8 @@ function GerarAtividade() {
             </div>
 
             {/* FORMULÁRIO */}
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="mt-8 space-y-6"
-            >
-              {/* INFORMAÇÕES PRINCIPAIS */}
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+
               <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-8">
                 <div className="mb-6 flex items-start gap-4">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
@@ -281,8 +304,7 @@ function GerarAtividade() {
                       Objetivo e orientações
                     </h2>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      Personalize as sugestões que a inteligência artificial
-                      irá preparar.
+                      Personalize as sugestões que a inteligência artificial irá preparar.
                     </p>
                   </div>
                 </div>
@@ -348,8 +370,7 @@ function GerarAtividade() {
                 </h2>
 
                 <p className="mt-2 max-w-lg text-sm leading-6 text-slate-600">
-                  A IA irá preparar três propostas diferentes. Você poderá
-                  comparar as opções e salvar somente a escolhida.
+                  A IA irá preparar três propostas diferentes. Você poderá comparar as opções e salvar somente a escolhida.
                 </p>
 
                 <div className="mt-6 w-full sm:w-auto">
@@ -387,8 +408,7 @@ function GerarAtividade() {
                   </h2>
 
                   <p className="mt-2 max-w-2xl leading-7 text-slate-600">
-                    Compare as propostas abaixo. Ao escolher uma opção,
-                    você poderá salvá-la no seu espaço de atividades.
+                    Compare as propostas abaixo. Ao escolher uma opção, você poderá salvá-la no seu espaço de atividades.
                   </p>
                 </div>
 
@@ -405,13 +425,7 @@ function GerarAtividade() {
                             : "border-slate-200 shadow-sm hover:-translate-y-1 hover:shadow-lg"
                         }`}
                       >
-                        <div
-                          className={`h-1.5 ${
-                            selecionada
-                              ? "bg-blue-600"
-                              : "bg-gradient-to-r from-blue-500 to-cyan-400"
-                          }`}
-                        />
+                        <div className={`h-1.5 ${selecionada ? "bg-blue-600" : "bg-gradient-to-r from-blue-500 to-cyan-400"}`} />
 
                         <div className="flex flex-1 flex-col p-5 sm:p-6">
                           <div className="mb-4 flex items-center justify-between gap-3">
@@ -419,12 +433,7 @@ function GerarAtividade() {
                               Opção {index + 1}
                             </span>
 
-                            {selecionada && (
-                              <CheckCircle2
-                                size={22}
-                                className="text-blue-600"
-                              />
-                            )}
+                            {selecionada && <CheckCircle2 size={22} className="text-blue-600" />}
                           </div>
 
                           <h3 className="text-xl font-bold leading-snug text-slate-900">
@@ -489,9 +498,7 @@ function GerarAtividade() {
                                 : "border border-blue-200 bg-white text-blue-800 hover:border-blue-400 hover:bg-blue-50"
                             }`}
                           >
-                            {selecionada
-                              ? "✓ Atividade selecionada"
-                              : "Escolher esta atividade"}
+                            {selecionada ? "✓ Atividade selecionada" : "Escolher esta atividade"}
                           </button>
                         </div>
                       </article>

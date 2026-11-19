@@ -1,59 +1,68 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { Download, Printer } from "lucide-react";
+
+import {
+  ArrowLeft,
+  Pencil,
+  Save,
+  X,
+  BookOpen,
+  GraduationCap,
+  Clock,
+  Target,
+  Lightbulb,
+  ClipboardList,
+  Package,
+  FileText,
+  CheckCircle2,
+  CalendarDays,
+} from "lucide-react";
 
 import MenuLateral from "../componentes/menuLateral";
 import MenuAzul from "../componentes/MenuAzul";
-import BtnAzul from "../componentes/bntAzul";
+
+import {
+  CampoTexto,
+  CartaoInfo,
+  exibirValor,
+} from "../componentes/CampoEditavel";
 
 import AulaApi from "../api/modelos/Aula";
+import { useAuth } from "../contexts/AuthContext";
 
-function exibirValor(valor) {
-  if (valor === null || valor === undefined || valor === "") {
-    return "Não informado";
-  }
+const CAMPOS_EDITAVEIS = [
+  "titulo_da_aula",
+  "materia",
+  "turma",
+  "duracao",
+  "objetivos",
+  "habilidades",
+  "desenvolvimento",
+  "metodologia",
+  "materiais_necessarios",
+  "criterios",
+  "observacoes",
+];
 
-  if (Array.isArray(valor)) {
-    return valor
-      .map((item) =>
-        typeof item === "object" && item !== null
-          ? JSON.stringify(item, null, 2)
-          : String(item)
-      )
-      .join("\n");
-  }
-
-  if (typeof valor === "object") {
-    return JSON.stringify(valor, null, 2);
-  }
-
-  return String(valor);
-}
-
-function Campo({ titulo, valor }) {
+function TituloSecao({ icone: Icone, titulo, descricao }) {
   return (
-    <section className="mb-8 break-inside-avoid">
-      <h2 className="mb-3 text-lg font-bold text-gray-900 sm:text-xl">
-        {titulo}
-      </h2>
-
-      <div className="min-h-20 whitespace-pre-wrap break-words rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm leading-7 text-gray-700 sm:text-base">
-        {exibirValor(valor)}
+    <div className="mb-5 flex items-center gap-3">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 print:hidden">
+        <Icone size={21} />
       </div>
-    </section>
-  );
-}
 
-function Informacao({ titulo, valor }) {
-  return (
-    <div className="break-inside-avoid rounded-xl border border-gray-200 bg-white p-4">
-      <p className="mb-2 text-sm font-medium text-gray-500">
-        {titulo}
-      </p>
+      <div>
+        <h2 className="text-lg font-bold text-gray-800 md:text-xl">
+          {titulo}
+        </h2>
 
-      <p className="break-words text-base font-semibold text-gray-900">
-        {exibirValor(valor)}
-      </p>
+        {descricao && (
+          <p className="text-sm text-gray-500">
+            {descricao}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -61,10 +70,17 @@ function Informacao({ titulo, valor }) {
 function VisualizarPlano() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { usuario } = useAuth();
 
   const [aula, setAula] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+
+  const [editando, setEditando] = useState(false);
+  const [form, setForm] = useState({});
+  const [salvando, setSalvando] = useState(false);
+  const [erroSalvar, setErroSalvar] = useState("");
+  const [mensagem, setMensagem] = useState("");
 
   useEffect(() => {
     let ativo = true;
@@ -73,32 +89,19 @@ function VisualizarPlano() {
       try {
         setCarregando(true);
         setErro("");
-        setAula(null);
 
-        if (!id) {
-          throw new Error("O ID da aula não foi informado na rota.");
-        }
+        const resposta = await AulaApi.buscar(id);
 
-        const resposta = await AulaApi.listar();
-
-        if (resposta.status !== 200) {
-          throw new Error("Não foi possível buscar as aulas.");
-        }
-
-        const aulas = Array.isArray(resposta.data)
-          ? resposta.data
-          : [];
-
-        const aulaEncontrada = aulas.find(
-          (item) => String(item.id_aula) === String(id)
-        );
-
-        if (!aulaEncontrada) {
+        if (resposta.status === 404) {
           throw new Error("A aula selecionada não foi encontrada.");
         }
 
+        if (resposta.status !== 200) {
+          throw new Error("Não foi possível buscar a aula.");
+        }
+
         if (ativo) {
-          setAula(aulaEncontrada);
+          setAula(resposta.data);
         }
       } catch (error) {
         if (ativo) {
@@ -120,289 +123,434 @@ function VisualizarPlano() {
     };
   }, [id]);
 
-  function baixarPDF() {
-    if (!aula) return;
+  const podeEditar =
+    usuario &&
+    aula &&
+    Number(aula.id_usuario) === Number(usuario.id);
 
-    document.title = `Plano de Aula - ${
-      aula.titulo_da_aula || "Edu+.IA"
-    }`;
+  const dados = editando ? form : aula;
 
+  function iniciarEdicao() {
+    const copia = {};
+
+    for (const campo of CAMPOS_EDITAVEIS) {
+      copia[campo] = aula[campo] ?? "";
+    }
+
+    setForm(copia);
+    setErroSalvar("");
+    setMensagem("");
+    setEditando(true);
+  }
+
+  function cancelarEdicao() {
+    setEditando(false);
+    setErroSalvar("");
+    setMensagem("");
+  }
+
+  function alterar(campo, valor) {
+    setForm((atual) => ({
+      ...atual,
+      [campo]: valor,
+    }));
+  }
+
+  async function salvar() {
+    if (salvando) return;
+
+    if (!String(form.titulo_da_aula ?? "").trim()) {
+      setErroSalvar("O título da aula não pode ficar vazio.");
+      return;
+    }
+
+    setSalvando(true);
+    setErroSalvar("");
+    setMensagem("");
+
+    try {
+      const resposta = await AulaApi.atualizar(id, {
+        id_usuario: usuario.id,
+        ...form,
+      });
+
+      if (resposta.status === 200) {
+        setAula(resposta.data);
+        setEditando(false);
+        setMensagem("Alterações salvas com sucesso!");
+      } else {
+        setErroSalvar(
+          resposta.data?.erro ||
+          "Não foi possível salvar as alterações."
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao salvar aula:", error);
+
+      setErroSalvar(
+        "Não foi possível conectar ao servidor. Verifique se ele está rodando."
+      );
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  function exportarPDF() {
+    if (editando || salvando) {
+      setErroSalvar(
+        "Salve ou cancele a edição antes de exportar."
+      );
+      return;
+    }
+
+    setErroSalvar("");
     window.print();
   }
 
-  return (
-    <>
-      <style>{`
-        @media print {
-          @page {
-            size: A4;
-            margin: 16mm;
-          }
+  if (carregando) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="flex items-center gap-3 text-gray-500">
+          <Clock size={20} className="animate-spin" />
+          Carregando planejamento...
+        </div>
+      </div>
+    );
+  }
 
-          html,
-          body {
-            background: #ffffff !important;
-            color: #111827 !important;
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-          }
-
-          body * {
-            visibility: hidden !important;
-          }
-
-          #conteudo-plano-pdf,
-          #conteudo-plano-pdf * {
-            visibility: visible !important;
-          }
-
-          #conteudo-plano-pdf {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            max-width: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            background: #ffffff !important;
-          }
-
-          #conteudo-plano-pdf .campo-pdf {
-            break-inside: avoid;
-            page-break-inside: avoid;
-          }
-
-          #conteudo-plano-pdf .caixa-pdf {
-            background: #ffffff !important;
-            border-color: #d1d5db !important;
-          }
-
-          #conteudo-plano-pdf h1,
-          #conteudo-plano-pdf h2,
-          #conteudo-plano-pdf p,
-          #conteudo-plano-pdf span,
-          #conteudo-plano-pdf div {
-            color: #111827;
-          }
-
-          .nao-imprimir {
-            display: none !important;
-          }
-        }
-      `}</style>
-
+  if (erro || !aula) {
+    return (
       <section className="min-h-screen bg-gray-50">
-        <div className="nao-imprimir">
+        <div className="no-print">
           <MenuAzul Text="Visualizar Aula" />
         </div>
 
-        <div className="flex min-h-screen flex-col md:flex-row">
-          <div className="nao-imprimir">
-            <MenuLateral />
-          </div>
+        <div className="mx-auto mt-12 max-w-xl rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
+          <h1 className="mb-3 text-xl font-bold text-red-600">
+            Não foi possível abrir a aula
+          </h1>
 
-          <main className="min-w-0 flex-1 p-4 sm:p-6 md:p-8">
-            <div className="mx-auto max-w-5xl">
-              {/* Cabeçalho e botões */}
-              <div className="nao-imprimir mb-6 flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="mb-1 text-sm font-medium text-blue-700">
-                    Biblioteca
-                  </p>
+          <p className="text-gray-600">
+            {erro || "Aula não encontrada."}
+          </p>
 
-                  <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-                    Detalhes do plano de aula
-                  </h1>
-
-                  <p className="mt-2 text-sm text-gray-500">
-                    Consulte ou salve o plano de aula em PDF.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={baixarPDF}
-                    disabled={carregando || !!erro || !aula}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <Download size={18} />
-                    Baixar PDF
-                  </button>
-
-                  <BtnAzul
-                    onClick={() => navigate("/BibliotecaPrincipal")}
-                  >
-                    Voltar
-                  </BtnAzul>
-                </div>
-              </div>
-
-              {/* Conteúdo que será impresso */}
-              <div
-                id="conteudo-plano-pdf"
-                className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8"
-              >
-                {carregando ? (
-                  <div className="flex flex-col items-center justify-center py-16">
-                    <div className="mb-4 h-9 w-9 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
-
-                    <p className="text-sm text-gray-500">
-                      Carregando aula...
-                    </p>
-                  </div>
-                ) : erro ? (
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-                    <div className="mb-3 flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 font-bold text-red-600">
-                        !
-                      </div>
-
-                      <h2 className="text-lg font-bold text-red-800">
-                        Não foi possível abrir a aula
-                      </h2>
-                    </div>
-
-                    <p className="text-sm leading-6 text-red-700">
-                      {erro}
-                    </p>
-                  </div>
-                ) : aula ? (
-                  <>
-                    {/* Identificação */}
-                    <div className="mb-8 break-inside-avoid border-b border-gray-200 pb-6">
-                      <div className="mb-4 flex items-center gap-2 text-blue-700">
-                        <Printer size={20} />
-
-                        <span className="text-sm font-semibold">
-                          Edu+.IA — Plano de aula
-                        </span>
-                      </div>
-
-                      <span className="inline-flex rounded-lg bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700">
-                        {exibirValor(aula.materia)}
-                      </span>
-
-                      <h1 className="mt-4 break-words text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">
-                        {exibirValor(aula.titulo_da_aula)}
-                      </h1>
-
-                      <p className="mt-3 text-sm text-gray-600">
-                        Turma: {exibirValor(aula.turma)}
-                      </p>
-                    </div>
-
-                    {/* Informações principais */}
-                    <section className="mb-10">
-                      <h2 className="mb-4 text-lg font-bold text-gray-900 sm:text-xl">
-                        Informações principais
-                      </h2>
-
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        <Informacao
-                          titulo="Título da aula"
-                          valor={aula.titulo_da_aula}
-                        />
-
-                        <Informacao
-                          titulo="Disciplina"
-                          valor={aula.materia}
-                        />
-
-                        <Informacao
-                          titulo="Turma"
-                          valor={aula.turma}
-                        />
-
-                        <Informacao
-                          titulo="Duração"
-                          valor={
-                            aula.duracao
-                              ? `${aula.duracao} minutos`
-                              : "Não informado"
-                          }
-                        />
-                      </div>
-                    </section>
-
-                    {/* Conteúdo pedagógico */}
-                    <div className="border-t border-gray-100 pt-8">
-                      <div className="campo-pdf">
-                        <Campo
-                          titulo="Objetivos da aula"
-                          valor={aula.objetivos}
-                        />
-                      </div>
-
-                      <div className="campo-pdf">
-                        <Campo
-                          titulo="Habilidades"
-                          valor={aula.habilidades}
-                        />
-                      </div>
-
-                      <div className="campo-pdf">
-                        <Campo
-                          titulo="Conteúdo e desenvolvimento"
-                          valor={
-                            aula.desenvolvimento ??
-                            aula.conteudo ??
-                            aula.tema
-                          }
-                        />
-                      </div>
-
-                      <div className="campo-pdf">
-                        <Campo
-                          titulo="Metodologia"
-                          valor={aula.metodologia}
-                        />
-                      </div>
-
-                      <div className="campo-pdf">
-                        <Campo
-                          titulo="Materiais e recursos"
-                          valor={
-                            aula.materiais_necessarios ??
-                            aula.materiais ??
-                            aula.recursos
-                          }
-                        />
-                      </div>
-
-                      <div className="campo-pdf">
-                        <Campo
-                          titulo="Avaliação e critérios"
-                          valor={aula.criterios}
-                        />
-                      </div>
-
-                      <div className="campo-pdf">
-                        <Campo
-                          titulo="Observações"
-                          valor={aula.observacoes}
-                        />
-                      </div>
-                    </div>
-
-                    <p className="mt-8 border-t border-gray-200 pt-4 text-center text-xs text-gray-500">
-                      Edu+.IA — Apoio inteligente para o planejamento docente.
-                    </p>
-                  </>
-                ) : null}
-              </div>
-
-              <p className="nao-imprimir mt-5 text-center text-xs text-gray-400">
-                Ao clicar em “Baixar PDF”, selecione “Salvar como PDF” na janela de impressão.
-              </p>
-            </div>
-          </main>
+          <button
+            onClick={() => navigate("/BibliotecaPrincipal")}
+            className="mt-6 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white"
+          >
+            Voltar à biblioteca
+          </button>
         </div>
       </section>
-    </>
+    );
+  }
+
+  return (
+    <section className="min-h-screen bg-[#F4F7FC] print:bg-white">
+
+      {/* MENU */}
+      <div className="no-print">
+        <MenuAzul Text="Visualizar Aula" />
+      </div>
+
+      <div className="flex min-h-screen flex-col md:flex-row">
+
+        <div className="no-print">
+          <MenuLateral />
+        </div>
+
+        <main className="min-w-0 flex-1 p-4 md:p-8 print:p-0">
+
+          {/* AÇÕES */}
+          <div className="no-print mx-auto mb-6 flex max-w-5xl flex-wrap items-center justify-between gap-3">
+
+            <button
+              onClick={() => navigate("/BibliotecaPrincipal")}
+              className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 shadow-sm transition hover:bg-gray-50"
+            >
+              <ArrowLeft size={18} />
+              Voltar à biblioteca
+            </button>
+
+            {podeEditar && (
+              editando ? (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={salvar}
+                    disabled={salvando}
+                    className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    <Save size={17} />
+                    {salvando ? "Salvando..." : "Salvar"}
+                  </button>
+
+                  <button
+                    onClick={cancelarEdicao}
+                    disabled={salvando}
+                    className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50"
+                  >
+                    <X size={17} />
+                    Cancelar
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={iniciarEdicao}
+                  className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                >
+                  <Pencil size={17} />
+                  Editar planejamento
+                </button>
+              )
+            )}
+          </div>
+
+          {/* MENSAGENS */}
+          <div className="no-print mx-auto max-w-5xl">
+            {erroSalvar && (
+              <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                {erroSalvar}
+              </div>
+            )}
+
+            {mensagem && (
+              <div className="mb-5 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+                <CheckCircle2 size={18} />
+                {mensagem}
+              </div>
+            )}
+          </div>
+
+          {/* DOCUMENTO */}
+          <div
+            id="documento-aula-pdf"
+            className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm print:max-w-none print:overflow-visible print:rounded-none print:border-0 print:shadow-none"
+          >
+
+            {/* CABEÇALHO */}
+            <div className="relative overflow-hidden bg-gradient-to-r from-blue-800 to-blue-600 px-6 py-9 text-white md:px-10 md:py-12 print:bg-blue-800">
+
+              <div className="relative z-10">
+
+                <div className="mb-4 flex items-center gap-2 text-sm font-medium text-blue-100">
+                  <BookOpen size={17} />
+                  EDU+.IA • PLANEJAMENTO PEDAGÓGICO
+                </div>
+
+                <h1 className="mb-3 break-words text-2xl font-bold md:text-4xl">
+                  {exibirValor(dados.titulo_da_aula)}
+                </h1>
+
+                <p className="text-blue-100 md:text-lg">
+                  {exibirValor(dados.materia)} •{" "}
+                  {exibirValor(dados.turma)}
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <span className="flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm">
+                    <GraduationCap size={16} />
+                    {exibirValor(dados.turma)}
+                  </span>
+
+                  <span className="flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm">
+                    <Clock size={16} />
+                    {exibirValor(dados.duracao)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="absolute -right-10 -top-16 h-64 w-64 rounded-full border-[35px] border-white/10 print:hidden" />
+
+              <div className="absolute -bottom-24 right-32 h-48 w-48 rounded-full bg-white/5 print:hidden" />
+            </div>
+
+            {/* CONTEÚDO */}
+            <div className="space-y-10 p-5 md:p-10 print:space-y-6 print:p-6">
+
+              {/* INFORMAÇÕES */}
+              <section>
+                <TituloSecao
+                  icone={GraduationCap}
+                  titulo="Informações principais"
+                  descricao="Identificação e organização da aula"
+                />
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 print:grid-cols-2">
+                  <CartaoInfo
+                    rotulo="Título da aula"
+                    valor={dados.titulo_da_aula}
+                    editando={editando}
+                    onChange={(v) => alterar("titulo_da_aula", v)}
+                  />
+
+                  <CartaoInfo
+                    rotulo="Disciplina"
+                    valor={dados.materia}
+                    editando={editando}
+                    onChange={(v) => alterar("materia", v)}
+                  />
+
+                  <CartaoInfo
+                    rotulo="Turma"
+                    valor={dados.turma}
+                    editando={editando}
+                    onChange={(v) => alterar("turma", v)}
+                  />
+
+                  <CartaoInfo
+                    rotulo="Duração"
+                    valor={dados.duracao}
+                    editando={editando}
+                    onChange={(v) => alterar("duracao", v)}
+                  />
+                </div>
+              </section>
+
+              <div className="border-t border-gray-100" />
+
+              {/* OBJETIVOS */}
+              <section>
+                <TituloSecao
+                  icone={Target}
+                  titulo="Objetivos da aula"
+                  descricao="Resultados de aprendizagem esperados"
+                />
+
+                <CampoTexto
+                  titulo="Objetivos de aprendizagem"
+                  valor={dados.objetivos}
+                  editando={editando}
+                  onChange={(v) => alterar("objetivos", v)}
+                />
+              </section>
+
+              {/* HABILIDADES */}
+              <section>
+                <TituloSecao
+                  icone={Lightbulb}
+                  titulo="Habilidades"
+                  descricao="Competências e habilidades trabalhadas"
+                />
+
+                <CampoTexto
+                  titulo="Habilidades desenvolvidas"
+                  valor={dados.habilidades}
+                  editando={editando}
+                  onChange={(v) => alterar("habilidades", v)}
+                />
+              </section>
+
+              {/* DESENVOLVIMENTO */}
+              <section>
+                <TituloSecao
+                  icone={BookOpen}
+                  titulo="Conteúdo e desenvolvimento"
+                  descricao="Etapas e organização do conteúdo pedagógico"
+                />
+
+                <CampoTexto
+                  titulo="Desenvolvimento da aula"
+                  valor={dados.desenvolvimento}
+                  editando={editando}
+                  onChange={(v) => alterar("desenvolvimento", v)}
+                />
+              </section>
+
+              {/* METODOLOGIA */}
+              <section>
+                <TituloSecao
+                  icone={ClipboardList}
+                  titulo="Metodologia"
+                  descricao="Estratégias e procedimentos de ensino"
+                />
+
+                <CampoTexto
+                  titulo="Metodologia aplicada"
+                  valor={dados.metodologia}
+                  editando={editando}
+                  onChange={(v) => alterar("metodologia", v)}
+                />
+              </section>
+
+              {/* MATERIAIS */}
+              <section>
+                <TituloSecao
+                  icone={Package}
+                  titulo="Materiais e recursos"
+                  descricao="Recursos utilizados durante a aula"
+                />
+
+                <CampoTexto
+                  titulo="Materiais necessários"
+                  valor={dados.materiais_necessarios}
+                  editando={editando}
+                  onChange={(v) => alterar("materiais_necessarios", v)}
+                />
+              </section>
+
+              {/* AVALIAÇÃO */}
+              <section>
+                <TituloSecao
+                  icone={ClipboardList}
+                  titulo="Avaliação e critérios"
+                  descricao="Acompanhamento da aprendizagem"
+                />
+
+                <CampoTexto
+                  titulo="Critérios de avaliação"
+                  valor={dados.criterios}
+                  editando={editando}
+                  onChange={(v) => alterar("criterios", v)}
+                />
+              </section>
+
+              {/* OBSERVAÇÕES */}
+              <section>
+                <TituloSecao
+                  icone={FileText}
+                  titulo="Observações"
+                  descricao="Informações complementares"
+                />
+
+                <CampoTexto
+                  titulo="Observações adicionais"
+                  valor={dados.observacoes}
+                  editando={editando}
+                  onChange={(v) => alterar("observacoes", v)}
+                />
+              </section>
+
+              {/* RODAPÉ */}
+              <div className="border-t border-gray-200 pt-6">
+                <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+
+                  <div>
+                    <p className="font-semibold text-gray-700">
+                      Planejamento pedagógico
+                    </p>
+
+                    <p className="text-xs text-gray-400">
+                      Documento da plataforma Edu+.IA
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={exportarPDF}
+                    disabled={editando || salvando}
+                    className="no-print flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <FileText size={18} />
+                    Exportar em PDF
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
   );
 }
 

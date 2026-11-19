@@ -1,57 +1,72 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import { Download } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Clock,
+  GraduationCap,
+  Target,
+  FileText,
+  Lightbulb,
+  Pencil,
+  Save,
+  X,
+  Download,
+  ClipboardList,
+  MessageSquare,
+} from "lucide-react";
 
 import MenuLateral from "../componentes/menuLateral";
 import MenuAzul from "../componentes/MenuAzul";
-import BtnAzul from "../componentes/bntAzul";
+
+import {
+  CampoTexto,
+  CartaoInfo,
+  exibirValor,
+} from "../componentes/CampoEditavel";
 
 import AtividadeApi from "../api/modelos/Atividade";
+import { useAuth } from "../contexts/AuthContext";
 
-function exibirValor(valor) {
-  if (valor === null || valor === undefined || valor === "") {
-    return "Não informado";
-  }
+const CAMPOS_EDITAVEIS = [
+  "titulo_da_atividade",
+  "materia",
+  "turma",
+  "duracao",
+  "objetivo",
+  "descricao",
+  "observacoes",
+];
 
-  return String(valor);
-}
-
-function Campo({ titulo, valor }) {
+function Secao({ titulo, icone: Icon, children }) {
   return (
-    <section className="campo-pdf mb-8">
-      <h2 className="mb-3 text-lg font-bold text-gray-900 sm:text-xl">
-        {titulo}
-      </h2>
-
-      <div className="min-h-20 whitespace-pre-wrap break-words rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm leading-7 text-gray-700 sm:text-base">
-        {exibirValor(valor)}
+    <section className="mb-8">
+      <div className="mb-4 flex items-center gap-3 border-b border-blue-100 pb-3">
+        <div className="rounded-lg bg-blue-100 p-2 text-blue-700">
+          <Icon size={21} />
+        </div>
+        <h2 className="text-xl font-bold text-gray-800">{titulo}</h2>
       </div>
+      {children}
     </section>
-  );
-}
-
-function Informacao({ titulo, valor }) {
-  return (
-    <div className="campo-pdf rounded-xl border border-gray-200 bg-white p-4">
-      <p className="mb-2 text-sm font-medium text-gray-500">
-        {titulo}
-      </p>
-
-      <p className="break-words text-base font-semibold text-gray-900">
-        {exibirValor(valor)}
-      </p>
-    </div>
   );
 }
 
 function VisualizarAtividade() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { usuario } = useAuth();
 
   const [atividade, setAtividade] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+
+  const [editando, setEditando] = useState(false);
+  const [form, setForm] = useState({});
+  const [salvando, setSalvando] = useState(false);
+  const [erroSalvar, setErroSalvar] = useState("");
+  const [mensagem, setMensagem] = useState("");
 
   useEffect(() => {
     let ativo = true;
@@ -78,7 +93,6 @@ function VisualizarAtividade() {
         if (ativo) {
           setErro(error.message || "Erro ao carregar a atividade.");
         }
-
         console.error("Erro ao visualizar atividade:", error);
       } finally {
         if (ativo) {
@@ -94,246 +108,297 @@ function VisualizarAtividade() {
     };
   }, [id]);
 
-  function baixarPDF() {
-    if (!atividade || carregando || erro) return;
+  const podeEditar =
+    usuario &&
+    atividade &&
+    Number(atividade.id_usuario) === Number(usuario.id);
 
-    const tituloOriginal = document.title;
+  const dados = editando ? form : atividade;
 
-    document.title = `Atividade - ${
-      atividade.titulo_da_atividade || "Edu+.IA"
-    }`;
+  function iniciarEdicao() {
+    const copia = {};
 
-    const restaurarTitulo = () => {
-      document.title = tituloOriginal;
-      window.removeEventListener("afterprint", restaurarTitulo);
-    };
+    for (const campo of CAMPOS_EDITAVEIS) {
+      copia[campo] = atividade[campo] ?? "";
+    }
 
-    window.addEventListener("afterprint", restaurarTitulo);
+    setForm(copia);
+    setErroSalvar("");
+    setMensagem("");
+    setEditando(true);
+  }
+
+  function cancelarEdicao() {
+    setEditando(false);
+    setErroSalvar("");
+  }
+
+  function alterar(campo, valor) {
+    setForm((atual) => ({
+      ...atual,
+      [campo]: valor,
+    }));
+  }
+
+  async function salvar() {
+    if (salvando) return;
+
+    const obrigatorios = [
+      "titulo_da_atividade",
+      "materia",
+      "turma",
+      "duracao",
+      "objetivo",
+      "descricao",
+    ];
+
+    for (const campo of obrigatorios) {
+      if (!String(form[campo] ?? "").trim()) {
+        setErroSalvar("Só as observações podem ficar vazias.");
+        return;
+      }
+    }
+
+    setSalvando(true);
+    setErroSalvar("");
+    setMensagem("");
+
+    try {
+      const resposta = await AtividadeApi.atualizar(id, {
+        id_usuario: usuario.id,
+        ...form,
+      });
+
+      if (resposta.status === 200) {
+        setAtividade(resposta.data);
+        setEditando(false);
+        setMensagem("Alterações salvas com sucesso.");
+      } else {
+        setErroSalvar(
+          resposta.data?.erro || "Não foi possível salvar as alterações."
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao salvar atividade:", error);
+      setErroSalvar(
+        "Não foi possível conectar ao servidor. Verifique se ele está rodando."
+      );
+    } finally {
+      setSalvando(false);
+    }
+  }
+
+  function exportarPDF() {
+    if (editando || salvando) {
+      setErroSalvar("Salve ou cancele a edição antes de exportar.");
+      return;
+    }
 
     window.print();
-
-    // Segurança caso o navegador não dispare o evento afterprint.
-    setTimeout(restaurarTitulo, 1000);
   }
 
   return (
-    <section className="min-h-screen bg-gray-50">
-      <style>{`
-        @page {
-          size: A4;
-          margin: 15mm;
-        }
-
-        @media print {
-          html,
-          body {
-            background: white !important;
-            color: #111827 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-
-          body * {
-            visibility: hidden !important;
-          }
-
-          #conteudo-atividade-pdf,
-          #conteudo-atividade-pdf * {
-            visibility: visible !important;
-          }
-
-          #conteudo-atividade-pdf {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            background: white !important;
-          }
-
-          .nao-imprimir {
-            display: none !important;
-          }
-
-          .campo-pdf {
-            break-inside: avoid;
-            page-break-inside: avoid;
-          }
-
-          #conteudo-atividade-pdf h1,
-          #conteudo-atividade-pdf h2 {
-            color: #111827 !important;
-          }
-
-          #conteudo-atividade-pdf .fundo-pdf {
-            background: #f9fafb !important;
-          }
-
-          #conteudo-atividade-pdf .borda-pdf {
-            border-color: #d1d5db !important;
-          }
-        }
-      `}</style>
-
-      <div className="nao-imprimir">
+    <section className="min-h-screen bg-slate-100">
+      <div className="no-print">
         <MenuAzul Text="Visualizar Atividade" />
       </div>
 
       <div className="flex min-h-screen flex-col md:flex-row">
-        <div className="nao-imprimir">
+        <div className="no-print">
           <MenuLateral />
         </div>
 
-        <main className="min-w-0 flex-1 p-4 sm:p-6 md:p-8">
+        <main className="min-w-0 flex-1 p-4 md:p-8">
           <div className="mx-auto max-w-5xl">
-            {/* Cabeçalho e ações */}
-            <div className="nao-imprimir mb-6 flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="mb-1 text-sm font-medium text-blue-700">
-                  Biblioteca
-                </p>
 
-                <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-                  Detalhes da atividade
-                </h1>
+            <div className="no-print mb-5 flex flex-wrap items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => navigate("/BibliotecaPrincipal")}
+                className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-50"
+              >
+                <ArrowLeft size={18} />
+                Voltar
+              </button>
 
-                <p className="mt-2 text-sm text-gray-500">
-                  Consulte as informações e orientações da atividade.
-                </p>
-              </div>
+              {atividade && podeEditar && (
+                <div className="flex flex-wrap gap-2">
+                  {editando ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={salvar}
+                        disabled={salvando}
+                        className="flex items-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 font-semibold text-white transition hover:bg-blue-800 disabled:opacity-60"
+                      >
+                        <Save size={18} />
+                        {salvando ? "Salvando..." : "Salvar"}
+                      </button>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={baixarPDF}
-                  disabled={carregando || !!erro || !atividade}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Download size={18} />
-                  Baixar PDF
-                </button>
-
-                <BtnAzul onClick={() => navigate("/BibliotecaPrincipal")}>
-                  Voltar
-                </BtnAzul>
-              </div>
+                      <button
+                        type="button"
+                        onClick={cancelarEdicao}
+                        disabled={salvando}
+                        className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-50"
+                      >
+                        <X size={18} />
+                        Cancelar
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={iniciarEdicao}
+                      className="flex items-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 font-semibold text-white transition hover:bg-blue-800"
+                    >
+                      <Pencil size={18} />
+                      Editar atividade
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Conteúdo da atividade */}
-            <div
-              id="conteudo-atividade-pdf"
-              className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8"
-            >
-              {carregando ? (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <div className="mb-4 h-9 w-9 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
+            {erroSalvar && (
+              <div className="no-print mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                {erroSalvar}
+              </div>
+            )}
 
-                  <p className="text-sm text-gray-500">
-                    Carregando atividade...
-                  </p>
-                </div>
-              ) : erro ? (
-                <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600">
-                      !
+            {mensagem && (
+              <div className="no-print mb-4 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+                {mensagem}
+              </div>
+            )}
+
+            {carregando ? (
+              <div className="rounded-2xl bg-white p-12 text-center shadow-sm">
+                <p className="text-gray-600">Carregando atividade...</p>
+              </div>
+            ) : erro ? (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
+                <h1 className="mb-2 text-xl font-bold">
+                  Não foi possível abrir a atividade
+                </h1>
+                <p>{erro}</p>
+                <p className="mt-2 text-sm">
+                  Confira se a atividade existe e se o ID está correto na URL.
+                </p>
+              </div>
+            ) : atividade && dados ? (
+              <>
+                <article
+                  id="documento-atividade-pdf"
+                  className="overflow-hidden rounded-2xl bg-white shadow-sm"
+                >
+                  {/* Cabeçalho do documento */}
+                  <header className="bg-gradient-to-r from-blue-800 to-blue-600 px-6 py-9 text-white md:px-10">
+                    <div className="mb-5 flex items-center gap-3">
+                      <div className="rounded-xl bg-white/15 p-3">
+                        <BookOpen size={28} />
+                      </div>
+
+                      <div>
+                        <p className="text-sm font-medium uppercase tracking-wider text-blue-100">
+                          Edu+.IA
+                        </p>
+                        <p className="text-sm text-blue-100">
+                          Planejamento de atividades
+                        </p>
+                      </div>
                     </div>
 
-                    <h2 className="text-lg font-bold text-red-800">
-                      Não foi possível abrir a atividade
-                    </h2>
-                  </div>
-
-                  <p className="text-sm leading-6 text-red-700">
-                    {erro}
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-red-600">
-                    Confira se a atividade existe e se o ID está correto na URL.
-                  </p>
-                </div>
-              ) : atividade ? (
-                <>
-                  {/* Identificação */}
-                  <div className="campo-pdf mb-8 border-b border-gray-100 pb-6">
-                    <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-700">
-                      Edu+.IA — Atividade pedagógica
-                    </p>
-
-                    <span className="inline-flex rounded-lg bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700">
-                      {exibirValor(atividade.materia)}
-                    </span>
-
-                    <h1 className="mt-4 break-words text-2xl font-bold leading-tight text-gray-900 sm:text-3xl">
-                      {exibirValor(atividade.titulo_da_atividade)}
+                    <h1 className="break-words text-3xl font-bold leading-tight md:text-4xl">
+                      {exibirValor(dados.titulo_da_atividade)}
                     </h1>
 
-                    <p className="mt-3 text-sm text-gray-500">
-                      Público-alvo: {exibirValor(atividade.turma)}
+                    <p className="mt-3 text-blue-100">
+                      {exibirValor(dados.materia)} •{" "}
+                      {exibirValor(dados.turma)}
                     </p>
+                  </header>
+
+                  <div className="p-6 md:p-10">
+                    <Secao titulo="Informações principais" icone={ClipboardList}>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <CartaoInfo
+                          rotulo="Título da atividade"
+                          valor={dados.titulo_da_atividade}
+                          editando={editando}
+                          onChange={(v) =>
+                            alterar("titulo_da_atividade", v)
+                          }
+                        />
+
+                        <CartaoInfo
+                          rotulo="Disciplina"
+                          valor={dados.materia}
+                          editando={editando}
+                          onChange={(v) => alterar("materia", v)}
+                        />
+
+                        <CartaoInfo
+                          rotulo="Público-alvo"
+                          valor={dados.turma}
+                          editando={editando}
+                          onChange={(v) => alterar("turma", v)}
+                        />
+
+                        <CartaoInfo
+                          rotulo="Duração estimada"
+                          valor={dados.duracao}
+                          editando={editando}
+                          onChange={(v) => alterar("duracao", v)}
+                        />
+                      </div>
+                    </Secao>
+
+                    <Secao titulo="Objetivo da atividade" icone={Target}>
+                      <CampoTexto
+                        titulo="Objetivo"
+                        valor={dados.objetivo}
+                        editando={editando}
+                        onChange={(v) => alterar("objetivo", v)}
+                      />
+                    </Secao>
+
+                    <Secao titulo="Desenvolvimento da atividade" icone={Lightbulb}>
+                      <CampoTexto
+                        titulo="Descrição"
+                        valor={dados.descricao}
+                        editando={editando}
+                        onChange={(v) => alterar("descricao", v)}
+                      />
+                    </Secao>
+
+                    <Secao titulo="Observações complementares" icone={MessageSquare}>
+                      <CampoTexto
+                        titulo="Observações"
+                        valor={dados.observacoes}
+                        editando={editando}
+                        onChange={(v) => alterar("observacoes", v)}
+                      />
+                    </Secao>
+
+                    <footer className="mt-10 border-t border-gray-200 pt-5 text-center text-sm text-gray-400">
+                      Edu+.IA — Plataforma Inteligente de Apoio ao Planejamento Docente
+                    </footer>
                   </div>
+                </article>
 
-                  {/* Informações principais */}
-                  <section className="mb-10">
-                    <h2 className="mb-4 text-lg font-bold text-gray-900 sm:text-xl">
-                      Informações principais
-                    </h2>
-
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <Informacao
-                        titulo="Título"
-                        valor={atividade.titulo_da_atividade}
-                      />
-
-                      <Informacao
-                        titulo="Disciplina"
-                        valor={atividade.materia}
-                      />
-
-                      <Informacao
-                        titulo="Público-alvo"
-                        valor={atividade.turma}
-                      />
-
-                      <Informacao
-                        titulo="Duração estimada"
-                        valor={atividade.duracao}
-                      />
-                    </div>
-                  </section>
-
-                  {/* Detalhes */}
-                  <div className="border-t border-gray-100 pt-8">
-                    <Campo
-                      titulo="Objetivo da atividade"
-                      valor={atividade.objetivo}
-                    />
-
-                    <Campo
-                      titulo="Descrição da atividade"
-                      valor={atividade.descricao}
-                    />
-
-                    <Campo
-                      titulo="Observações"
-                      valor={atividade.observacoes}
-                    />
-                  </div>
-
-                  <footer className="mt-8 border-t border-gray-200 pt-4 text-center text-xs text-gray-400">
-                    Edu+.IA — Apoio inteligente para o planejamento docente.
-                  </footer>
-                </>
-              ) : null}
-            </div>
-
-            <p className="nao-imprimir mt-5 text-center text-xs text-gray-400">
-              Edu+.IA — Apoio inteligente para o planejamento docente.
-            </p>
+                <div className="no-print mt-5 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={exportarPDF}
+                    disabled={editando || salvando}
+                    className="flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Download size={19} />
+                    Exportar PDF
+                  </button>
+                </div>
+              </>
+            ) : null}
           </div>
         </main>
       </div>

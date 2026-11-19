@@ -1,6 +1,18 @@
 import http from "../http";
 
 const PlanejamentoConteudoApi = {
+    substituir: async (id_planejamento, dados) => {
+    try {
+      const resposta = await http.put(
+        `/planejamento-conteudo/planejamento/${id_planejamento}`,
+        dados
+      );
+      return { data: resposta.data, status: resposta.status };
+    } catch (error) {
+      return { data: error.response.data, status: error.response.status };
+    }
+  },
+  
   criar: async (conteudo) => {
     try {
       const resposta = await http.post("/planejamento-conteudo", conteudo);
